@@ -1,53 +1,44 @@
-# GitHub 更新說明｜v5.9
+# v6.2 更新到 GitHub Pages
 
-此交付包只在本機產生，**沒有代你修改 GitHub、正式洗衣網站或 Pages 設定**。
+這一包是本機交付檔，不會自己修改你的 GitHub 或 laundry.com.tw。
 
-## 更新前
+## 本機先試
 
-先在目前工具「05 我的慣用版型」按「匯出慣用版型」，也可另按「匯出設定」。將備份留在自己的電腦，不要連同客戶照片上傳 repo。先記下目前 GitHub 的 commit，以便回退。未輸出的照片／批次工作不會隨更新保存。
+1. 解壓縮到新的資料夾，保留舊版備份。
+2. 用 Chrome / Edge 開 `index.html`。
+3. 左上應看到 v6.2；按「圖片工具箱・單張 / 批次」測一張。
+4. 舊版先匯出慣用版型 JSON 留在自己的電腦。照片與工作內容不是版型，請先完成輸出。
 
-## 上傳到現有 repo
+## 上傳
 
-開啟 [en-laundry-compare-tool](https://github.com/brain113tw/en-laundry-compare-tool)，按 **Add file → Upload files**。把 ZIP 解壓縮後的**資料夾內全部檔案與子資料夾**拖入；不要只上傳 ZIP，也不要把整個最外層目錄多包一層。
+在原 repository 的 `Code → Add file → Upload files`，將解壓縮後的檔案和子資料夾上傳到 repo 根目錄，覆蓋同名檔案。**index.html 必須在根目錄，不要多包一層資料夾，也不要只上傳 ZIP。**
 
-根目錄應能直接看到 `index.html`、`README.md`、`SECURITY.md`、`en_compare_manager_v5_8.html`、`docs/`、`tools/`、`tests/`、`.nojekyll`、`.gitignore`、`.gitattributes`。更新同名檔案；舊入口 `en_compare_manager_v5_8.html` 也要覆蓋，這份新版只負責導向 `index.html`。不要保留它原本的舊程式。
+最少要更新 `index.html`；README、docs、SECURITY 與舊版入口檔也應一起更新，避免文件或舊網址落後。
 
-Commit message 可用：
+Commit message：
 
 ```text
-Update to v5.9: validated imports, CSP hash, documentation and footer
+Update to v6.2: local toolbox, selected batch export and reusable presets
 ```
 
-個人專案可檢查差異後直接 commit 到 `main`；有協作審查規範時，依規範建立分支及 Pull Request。
+Pages 保持原本 `main / (root)` 設定，本包有 `.nojekyll`。等待對應本次新提交的部署完成，再開工具網址核對 v6.2。不要把重跑舊提交的成功紀錄當成新版已發布。
 
-`.gitignore` 是給 Git 工作流程的提醒，不是隱私防火牆，也不會阻止你在 GitHub 網頁手動選入敏感檔，更不會清除已提交的歷史。上傳前仍要逐項確認。
+GitHub Pages 官方發布來源說明：https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
 
-## Pages 設定不用重做
+## 哪個 HTML 要開
 
-你先前使用的 `Settings → Pages → Deploy from a branch → main → / (root)` 可維持。從指定分支發布的 Pages，會在該來源更新後觸發發布。看 Actions／Deployments 是否成功，再開 [工具首頁](https://brain113tw.github.io/en-laundry-compare-tool/) 核對左上角 **v5.9**。若仍是舊版，先重新整理及查看部署狀態，不要改成付費方案。[GitHub 官方文件](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
+- `index.html`：正式主入口。
+- `en_compare_manager_v6_2_toolbox.html`：與主入口內容相同，供下載單檔使用。
+- `en_compare_manager_v5_8.html`、`en_compare_manager_v6_0_toolbox.html`、`en_compare_manager_v6_1_toolbox.html`：舊網址相容入口，會導向主入口，沒有保留舊程式碼。
 
-根目錄的 `.nojekyll` 用於直接發布靜態檔，避免此單檔工具被當成 Jekyll 模板處理。檔案可能在部分介面被隱藏，請確認也有上傳。
+若公開 repo 原本有其他老版本完整 HTML，仍會公開且可直接訪問。本次工具沒有自動刪除你 repo 的檔案；請自行決定移除舊版或改相容入口。
 
-## 你仍需在 GitHub 檢查的事項
+## CSP 注意
 
-**私下安全回報：**`Settings → Advanced Security → Private vulnerability reporting → Enable`。加入 SECURITY.md 不會自動啟用此功能。[官方步驟](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository)
+正式 HTML 內嵌腳本的內容有 SHA-256 CSP 雜湊。不要只手動改腳本、貼入額外腳本或讓編輯器亂換腳本換行符，否則會被瀏覽器阻擋。
 
-**機密掃描與推送保護：**公開 repo 的 secret scanning 由 GitHub 自動提供；仍需查看警示、通知，以及你帳號目前可設定的 Push protection。文件不能代表已替你開啟。[機密掃描](https://docs.github.com/en/code-security/how-tos/secure-your-secrets/detect-secret-leaks/enable-secret-scanning)／[Push protection](https://docs.github.com/en/code-security/how-tos/secure-your-secrets/prevent-future-leaks/enable-push-protection)
+維護者修改後可用 `python tools/update_csp.py` 重算雜湊並同步兩個 v6.2 入口。一般使用者不需要執行此指令。
 
-**維護權限：**保持 GitHub 帳號安全，只授權需要的人。公開連結不是管理權限；本次沒有變更其他 Private repo。
+## 回滾
 
-## 更新後驗收
-
-確認首頁為 v5.9；加入兩張非客戶示意圖；洗前洗後順序正確；店名與底條能分開拖；輸出 WEBP／PNG／SVG 可開啟；左側空白區可拖入；版型可儲存並匯出 JSON；匯入舊版 JSON 後核對尺寸、文字及日期；開 README 的截圖、使用說明、Star 及正式網站連結。
-
-本機和 HTTPS 入口可能使用不同儲存空間，不能假設舊版型自動帶過來。必要時匯入更新前的 JSON 備份。[localStorage 行為](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
-
-## 修改程式碼時的 CSP
-
-`index.html` 採 script SHA-256 白名單。任何 JavaScript 字元變更後，執行 `node tools/update_csp.mjs`，再執行 `node tools/update_csp.mjs --check`。只替換 JS 但忘記同步 hash，瀏覽器會阻止腳本執行；不要用改回 `unsafe-inline` 掩蓋問題。
-
-`.gitattributes` 設為 LF，避免不同換行造成維護混亂。雜湊只是指定可執行腳本，無法阻擋已取得 repo 寫入權的人同時修改程式與 CSP。
-
-## 回退
-
-可從 GitHub commit 歷史恢復更新前檔案，再等待 Pages 發布。回退程式不等於恢復瀏覽器版型，仍需 JSON 備份。回退後舊版輸入驗證限制也會回來，請不要把它當成安全問題的永久解法。
+保留本次更新前的 Git 提交和舊版型 JSON。遇到問題可由你在 GitHub 回復前一個提交，再確認新的 Pages 發布。不要清除瀏覽器資料作為第一步，避免版型遺失。

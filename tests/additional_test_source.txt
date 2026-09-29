@@ -1,0 +1,43 @@
+from pathlib import Path
+from playwright.sync_api import sync_playwright
+from PIL import Image
+import json,io,base64,zipfile
+w=Path('<TEST_WORK_DIRECTORY>');html=(w/'release/index.html').read_text();checks=[]
+def ok(name,value,detail=''):
+ checks.append({'test':name,'passed':bool(value),'detail':str(detail)});print(('PASS ' if value else 'FAIL ')+name,detail,flush=True);assert value
+with sync_playwright() as p:
+ b=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox']);page=b.new_page(viewport={'width':1440,'height':980});page.on('dialog',lambda d:d.accept());errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+ page.set_content(html);page.locator('#fileInput').set_input_files([str(w/'fixtures/bag-before.png'),str(w/'fixtures/bag-after.png')]);page.wait_for_function('()=>S.items.length===2&&!S.importing');page.click('#toolboxOpen');page.wait_for_timeout(80)
+ # Preview and output equality at original resolution, including crop and rotation.
+ result=page.evaluate('''()=>{let s=EnToolbox.getState(),d=s.doc;d.crop={x:.1,y:.1,w:.75,h:.75};d.cfg.rotate=90;d.masks=[{x:.2,y:.2,w:.2,h:.15,type:'solid',strength:20}];let r=EnToolbox.core.renderDoc(item(s.active),d,null);return {data:r.cv.toDataURL(),w:r.g.W,h:r.g.H};}''')
+ im=Image.open(io.BytesIO(base64.b64decode(result['data'].split(',')[1]))).convert('RGB')
+ # Source mask center normalized in rotated crop: original centre .3,.275 -> local 160,105; rotation centre.
+ x=int((.75*600)-(.275*600-.1*600));y=int(.3*800-.1*800)
+ ok('Crop + rotation retain privacy coordinate transform',im.size==(450,600) and im.getpixel((x,y))==(20,25,23),im.size)
+ # Original cropped source alpha retained.
+ for kind in ['mosaic','blur']:
+  o=page.evaluate('''kind=>{let s=EnToolbox.getState(),d=s.doc;d.masks=[{x:.2,y:.15,w:.3,h:.3,type:kind,strength:30}];let r=EnToolbox.core.renderDoc(item(s.active),d,null);return r.cv.toDataURL();}''',kind)
+  ok('Local '+kind+' rendering completes',Image.open(io.BytesIO(base64.b64decode(o.split(',')[1]))).size==(800,600))
+ # Corrupt untrusted configs never reach canvas resource allocation.
+ ok('Toolbox string sizes rejected',page.evaluate("()=>{try{EnToolbox.core.validConfig({width:'8192'});return false}catch(e){return true}}"))
+ ok('Toolbox unknown colour format rejected',page.evaluate("()=>{try{EnToolbox.core.validConfig({textColor:'url(x)'});return false}catch(e){return true}}"))
+ # Actual compression ceiling: 1KB cannot be met at quality floor, preserve geometry and warn.
+ page.evaluate("window.saves=[];download=(blob,name)=>saves.push({blob,name});void 0;")
+ page.locator('#tb-targetKB').fill('1');page.locator('#tb-targetKB').press('Tab');page.click('#tbExport');page.wait_for_function('()=>saves.length===1&&!EnToolbox.getState().busy')
+ raw=page.evaluate('async()=>await blobDataURL(saves[0].blob)');im=Image.open(io.BytesIO(base64.b64decode(raw.split(',')[1])))
+ ok('Unreachable target never silently downsizes',im.size==(800,600) and '未達' in page.locator('#tbStatus').text_content(),page.locator('#tbStatus').text_content())
+ # Precision resize using a mask handle.
+ page.click('[data-tb-tab="privacy"]');page.click('#tbMaskAdd');page.wait_for_timeout(100)
+ st=page.evaluate('EnToolbox.getState()');m=st['doc']['masks'][0];r=page.locator('#tbOverlay').bounding_box();x=r['x']+(m['x']+m['w'])*r['width'];y=r['y']+(m['y']+m['h'])*r['height'];page.mouse.move(x,y);page.mouse.down();page.mouse.move(x+35,y+20,steps=4);page.mouse.up();page.wait_for_timeout(70)
+ m2=page.evaluate('EnToolbox.getState().doc.masks[0]');ok('Mask corner resize changes width and height',m2['w']>m['w'] and m2['h']>m['h'])
+ # Keyboard should NOT delete overlays when editing text in inputs.
+ page.click('[data-tb-tab="mark"]');page.locator('#tb-text').fill('0123');page.locator('#tb-text').press('Control+A');page.locator('#tb-text').press('Delete')
+ ok('Text-field Delete retains privacy masks',page.evaluate('EnToolbox.getState().doc.masks.length')==1)
+ # All requested crop selections at pointer corners consistent.
+ page.click('[data-tb-tab="crop"]');page.select_option('#tbCropAspect','0.8');page.wait_for_timeout(80)
+ m=page.evaluate('EnToolbox.getState().doc.crop');r=page.locator('#tbOverlay').bounding_box();x=r['x']+(m['x']+m['w'])*r['width'];y=r['y']+(m['y']+m['h'])*r['height'];page.mouse.move(x,y);page.mouse.down();page.mouse.move(x-35,y-25,steps=4);page.mouse.up();page.wait_for_timeout(70)
+ m=page.evaluate('EnToolbox.getState().doc.crop');ok('Locked crop aspect retained when corner resized',abs(m['w']*800/(m['h']*600)-.8)<.001)
+ # Processed version is appended for contrast workflow, original intact.
+ page.click('#tbToCompare');page.wait_for_function('()=>S.items.length===3&&!S.importing');ok('Processed image returns to comparison library',page.evaluate('S.items[2].file.name.endsWith("_edited.png")&&S.items[0].file.name==="bag-before.png"'))
+ ok('No runtime errors in extra cases',not errors,errors)
+ (w/'extra-results.json').write_text(json.dumps(checks,ensure_ascii=False,indent=2));b.close()

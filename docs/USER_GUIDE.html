@@ -1,78 +1,55 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'none'; style-src 'unsafe-inline'; img-src 'self'; base-uri 'none'; form-action 'none'"><meta name="referrer" content="no-referrer"><title>沂恩對比圖管理器 v5.9 使用說明</title><style>@page{size:A4;margin:16mm 17mm 18mm;@top-left{content:"EN LAUNDRY / 使用說明";font-family:"Noto Sans CJK TC",sans-serif;font-size:8pt;color:#63796e}@top-right{content:"v5.9";font-family:sans-serif;font-size:8pt;color:#63796e}@bottom-right{content:counter(page) " / " counter(pages);font-family:sans-serif;font-size:8pt;color:#63796e}}
-*{box-sizing:border-box}body{margin:0;color:#243b32;background:#eaf0ec;font:10.3pt/1.62 "Noto Sans CJK TC","Microsoft JhengHei",sans-serif}.sheet{background:white;max-width:210mm;margin:18px auto;padding:16mm 17mm;box-shadow:0 3px 20px #0001}.section-label{border-bottom:2px solid #256b51;color:#256b51;padding-bottom:5px;font-size:9pt;font-weight:700;letter-spacing:.5px;margin-bottom:15px}h1{font-size:22pt;line-height:1.4;margin:0 0 10px;color:#153e30}h1 span{font-size:15pt;font-weight:400;color:#6c8375}h2{font-size:12.2pt;margin:15px 0 7px;color:#17593f}p{margin:7px 0 10px}.eyebrow{font-size:8pt;letter-spacing:1px;color:#6e877a}.lead{font-size:11pt}.fullshot{display:block;width:100%;height:auto;border:1px solid #dce6e0}.caption{font-size:8pt;color:#687f72;margin:5px 0 9px}.callout{background:#eef6f1;border-left:3px solid #3b8864;padding:9px 12px;margin-top:13px;font-size:10pt}.mission-box{background:#153e30;color:#fff;padding:15px 18px;margin-top:15px;font-size:12pt;line-height:1.8}table{border-collapse:collapse;width:100%;margin:9px 0 12px;font-size:9.8pt;table-layout:fixed}th,td{border:1px solid #d8e3dc;padding:7px 9px;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf3ed;text-align:left;font-weight:700}th:first-child,td:first-child{width:29%}ol{padding-left:20px;margin:7px 0}li{margin:3px 0}code{font:9pt "Noto Sans Mono CJK TC",monospace;background:#f2f5f3}.two{display:flex;gap:16px}.two>div{width:50%}.panelshot{width:100%;height:auto;border:1px solid #dbe4dd}.crop-shot{display:block;width:85%;margin:8px auto;height:auto;border:1px solid #dbe4dd}.webnav{max-width:210mm;margin:12px auto;color:#174832}.webnav a{color:#174832;margin-right:14px}a{color:#16664b}img,tr,.callout,.mission-box{break-inside:avoid}h1,h2{break-after:avoid}
-@media print{body{background:white}.sheet{margin:0;padding:0;box-shadow:none;max-width:none;break-after:page}.sheet:last-child{break-after:auto}.webnav{display:none}.section-label{margin-top:0}.fullshot{max-height:115mm;object-fit:contain}}
-</style></head><body><nav class="webnav"><a href="../index.html">返回工具</a><a href="USER_GUIDE.pdf">PDF 版</a><span>以 Ctrl+P 列印本說明</span></nav><section class="sheet"><div class="section-label">01 / 開始使用</div>
-<p class="eyebrow">EN LAUNDRY · 操作手冊 · v5.9</p>
-<h1>沂恩對比圖管理器<br><span>把重複排版，變成固定流程。</span></h1>
-<p class="lead">洗前／洗後照片排版、社群比例檢查與批次輸出。先存幾個常用版型，之後把時間花在案例本身，而不是每次重新調整。</p>
-<img class="fullshot" src="screenshots/main-editor.webp" alt="主編輯畫面">
-<p class="caption">本手冊使用幾何測試素材；非客戶照片，亦非真實清洗成效。</p>
-<h2>第一次使用，只做五件事</h2>
-<ol><li>完整解壓縮後，用 Chrome／Edge 開 <b>index.html</b>；也可開線上工具。</li><li>加入兩張照片，在左側分別按 <b>洗前</b>、<b>洗後</b>。</li><li>選尺寸，調整主體大小、位置與案例文字。</li><li>檢查社群比例、標籤和店名，等輸出容量顯示完成。</li><li>輸出 WEBP／PNG／SVG；需要重複使用的樣式存為慣用版型。</li></ol>
-<div class="callout">工具不需要 Python。照片與批次工作不會跨分頁保存，關閉前先輸出。</div>
-</section><section class="sheet"><div class="section-label">02 / 照片、版型與大小</div>
-<h1>照片與畫布要分開調</h1>
-<p>「照片大小」改的是畫布內單張照片的呈現；「輸出尺寸」改的是完成後整張圖片的像素寬高。</p>
-<h2>加入與指定照片</h2>
-<p>上方「加入照片」可選多張；「加入資料夾」會讀取你指定的資料夾。從檔案總管拖入左側照片清單或空白區也可加入。第一次會依匯入順序暫配兩張，<b>不會推斷哪張真的洗過</b>。</p>
-<table><tr><th>你要調什麼</th><th>怎麼做</th></tr><tr><td>移動單張照片</td><td>在主預覽按住照片本體拖移。</td></tr><tr><td>放大／縮小照片</td><td>滑鼠放在照片區滾輪；也可改右側「大小 %」。100% 是自動適配大小。</td></tr><tr><td>兩邊不各占一半</td><td>拖中間綠色把手，或調「洗前占比」。同高自然模式可能先依原圖比例分配。</td></tr><tr><td>保留完整照片</td><td>選「完整保留・可留白」。空白處顯示你設定的底色。</td></tr><tr><td>讓照片填滿格子</td><td>選「填滿格子・可裁切」。注意鞋頭、提把、耳朵等邊緣。</td></tr><tr><td>指定整張大小</td><td>按常用尺寸；或選「自訂寬高」輸入精確數值。</td></tr></table>
-<h2>本工具的尺寸快捷選項</h2>
-<p>1600×900、1080×1080、1080×1350、1080×1440、1200×630、1080×1920。這些是排版起點，不是所有平台的強制規格。</p>
-<h2>原圖尺寸與檔案容量</h2>
-<p>照片清單與預覽下方會顯示原圖的 px 和 KB／MB。完成圖的像素尺寸在工作區頂部；編碼容量則在下方「輸出前檔案大小」。介面的 KB／MB 以 1024 進位計算，也列出 bytes。</p>
-<div class="callout">例：1600×900 是像素尺寸；200 KB 是儲存容量。把小圖輸出成更大的像素，不會憑空增加真實細節。</div>
-</section><section class="sheet"><div class="section-label">03 / 文字、店名與背景條</div>
-<h1>可移動的不是只有照片</h1>
-<p>在右側「03 案例標題與標籤」開啟要顯示的元素。主預覽上的外框用於操作，<b>外框、把手與輔助線不會輸出</b>。</p>
-<table><tr><th>元素</th><th>操作與限制</th></tr><tr><td>標題</td><td>勾選顯示、輸入文字。可拖位置、字級、旋轉與鎖定；仍在獨立標題區內調整。</td></tr><tr><td>BEFORE／AFTER</td><td>各自拖移位置、調旋轉與框底色。字級、字重、文字色、圓角、不透明度、陰影目前共用。</td></tr><tr><td>店名文字</td><td>在畫布任意位置拖移，可改字級、旋轉及鎖定。年月由你手動指定，不讀取或推測洗滌日期。</td></tr><tr><td>店名背景橫條</td><td>獨立於店名；可改位置、寬高%、顏色、不透明度、圓角及鎖定。</td></tr></table>
-<h2>移位置與改大小</h2>
-<p>拖文字或框的本體是移位置；拖其<b>右下角的小控制點</b>是改大小。照片則使用滾輪或大小數值。滑鼠放在文字／橫條上滾輪，不會縮放照片。</p>
-<p>店名與底條重疊時，文字優先被選取。要移底條，拖沒有文字的區域；或暫時鎖定店名。移動店名不會帶著橫條一起走。</p>
-<h2>顏色、透明度與鎖定</h2>
-<p>「留白／間隔底色」只改畫布露出的底色，不會替照片去背。「不透明度」100 表示實色，較低代表更透明；文字的清楚程度也會受照片背景影響。</p>
-<p>鎖定主要避免畫布上的拖移與縮放；要調整時先解除鎖定。右側欄位／套版仍可改變設定，不應把鎖定當成防修改權限。</p>
-<h2>快速定位與吸附</h2>
-<p>可用左上、右上、置中等快捷定位。拖文字接近 0／25／50／75／100% 時會吸附；它是比例參考，不會辨識照片物件或自動保證排版安全。</p>
-<div class="callout">旋轉後可能有一部分超出畫布或照片格子。務必查看完成圖；縮小文字或把位置往內移，比硬靠邊更穩定。</div>
-</section><section class="sheet"><div class="section-label">04 / 保存幾個慣用版型</div>
-<h1>保存樣式，不是保存照片專案</h1>
-<p>右側「05 我的慣用版型」最多 12 組。可以取名「網站案例 1600×900」「鞋包方形版」等，讓員工知道用途。</p>
-<div class="two"><div><h2>建立版型</h2><ol><li>先把尺寸、店名、標籤與輸出品質調好。</li><li>輸入版型名稱，按「儲存目前設定」。</li><li>確認儲存提示。如果顯示僅暫存，立即匯出 JSON。</li></ol><h2>下次套用</h2><p>在清單按「套用」。照片不會被替換，個別照片的構圖仍需微調。<b>標題和日期也會套回舊值</b>，請務必改成本次案例。</p><h2>刪除與覆蓋</h2><p>同名儲存會先詢問是否覆蓋；刪除／全部清除也會確認。版型刪除不是照片刪除。</p></div><div><img class="panelshot" src="screenshots/templates-detail.webp" alt="慣用版型區"><p class="caption">圖中顯示儲存被拒的降級提示；此時請用 JSON 備份。</p></div></div>
-<table><tr><th>功能</th><th>保存內容</th></tr><tr><td>匯出設定</td><td>一份目前樣式。不含照片及批次清單。</td></tr><tr><td>匯出慣用版型</td><td>整份已存版型清單，最多 12 組。</td></tr><tr><td>匯入慣用版型</td><td>會取代目前版型清單；已有資料時會先確認，不是自動合併。</td></tr></table>
-<p>JSON 上限 1 MiB。v5.9 會先驗證；格式錯誤時不覆蓋現有設定。陌生檔案仍不應直接信任。</p>
-<div class="callout">換電腦、改 HTML 檔名／位置、從本機換到線上、清除瀏覽器資料前：先匯出 JSON。localStorage 的 file:// 行為因瀏覽器而異，不能當作唯一備份。</div>
-</section><section class="sheet"><div class="section-label">05 / 裁切預覽與三種輸出</div>
-<h1>先看縮圖，再交付成品</h1>
-<p>點中間上方「FB / IG 縮圖檢查」，選「置中裁切」或「完整保留」。截圖例子中，橫向對比圖放入直式比例，兩邊主體會被裁掉，必須調整畫布或重新構圖。</p>
-<img class="crop-shot" src="screenshots/crop-detail.webp" alt="不同尺寸裁切示意">
-<p class="caption">這是幾何模擬，不是平台官方預覽；實際版位及裁切方式仍須發布前確認。</p>
-<h2>主畫面的安全參考框</h2>
-<p>「預覽框線」可選中央 60%、1:1、3:4、4:5、1200:630、9:16 等。中央 60% 是留白參考，不是社群平台保證不裁切的區域。</p>
-<table><tr><th>格式</th><th>要點</th></tr><tr><td>WEBP</td><td>依品質滑桿編碼，先看實測容量與畫質。</td></tr><tr><td>PNG</td><td>保留完成畫布的無損編碼；不會修復原圖失焦。</td></tr><tr><td>SVG</td><td>內嵌整張 PNG，不是可拆解的向量設計稿。</td></tr></table>
-<p>按上方格式按鈕後，檔案交由瀏覽器下載；不會自動存回舊 BAT 的 output 資料夾。預览是縮小呈現，銳利化細節請再開輸出檔確認。</p>
-<div class="callout">銳利化不是 AI 修復。拉太高可能使邊緣過硬或雜訊明顯，不要用來掩蓋兩張案例拍攝條件不同。</div>
-</section><section class="sheet"><div class="section-label">06 / 批次、復原與日常流程</div>
-<h1>一組確認後，再批次交付</h1>
-<ol><li>完成一組照片與文字後，點左側「批次」。</li><li>按「目前對比加入批次」，保存這組目前的尺寸、樣式和照片位置。</li><li>按「新建對比」，回照片清單指定下一組。</li><li>在批次清單逐組「預覽／調整」，確認順序與裁切，再勾選。</li><li>選 WEBP／PNG／SVG，按「勾選組合 → ZIP」。</li></ol>
-<h2>自動配對規則</h2>
-<p><code>書包_before.jpg</code> 對 <code>書包_after.jpg</code>；也接受 <code>_洗前</code>／<code>_洗後</code>。未明確命名的照片，同一資料夾恰好兩張時暫按檔名排序。不是按 EXIF 拍攝時間。<b>自動配對的組合預設不勾選。</b></p>
-<h2>套版到多組</h2>
-<p>「套用至所有組」或「只套用勾選組」會保留各組圖片位置及案例標題，更新其他樣式後取消勾選，讓你重新檢查。不同照片比例可能需要不同大小，不能只套版就直接認定每組合格。</p>
-<h2>ZIP 裡面是什麼</h2>
-<p>包含各組完成圖及 <code>export_report.json</code>。清單會記錄案例名稱、來源檔名／相對路徑、尺寸、容量與錯誤。不要把它當成可以還原所有編輯工作的專案檔；分享前也應檢查有無客戶資訊。</p>
-<h2>上一步／下一步</h2>
-<table><tr><th>快捷鍵</th><th>動作</th></tr><tr><td>Ctrl+Z</td><td>上一步；在文字欄位內保留瀏覽器原生文字復原。</td></tr><tr><td>Ctrl+Y／Ctrl+Shift+Z</td><td>下一步。</td></tr><tr><td>照片取得焦點後，方向鍵</td><td>微移照片；Shift 加速。</td></tr></table>
-<p>雙擊物件本體可重設位置，雙擊右下控制點可重設相應大小。清空照片會一併清空操作歷史，因為來源已釋放；仍不會刪除電腦上的原始照片。</p>
-<div class="callout">日常順序：套版 → 換照片 → 改標題／年月 → 微調主體 → 看裁切與容量 → 輸出 → 備份慣用版型。</div>
-</section><section class="sheet"><div class="section-label">07 / 故障排除、隱私與上線</div>
-<h1>遇到問題，先保住資料</h1>
-<table><tr><th>現象</th><th>處理方式</th></tr><tr><td>拖入照片沒反應</td><td>先用「加入照片」測試。確認副檔名與內容相符，並查看底部狀態或操作紀錄；HEIC／SVG／TIFF 請先轉成支援格式。</td></tr><tr><td>店名或底條拖不動</td><td>確認沒有鎖定。店名與底條各自選取；要拖底條時避開文字區域。</td></tr><tr><td>圖片很糊</td><td>先檢查原圖解析度、照片縮放倍數與對焦，不要只提高輸出尺寸或銳利化。</td></tr><tr><td>版型不見</td><td>確認是否換了瀏覽器、網址或檔名。使用 JSON 備份匯回。注意儲存被拒／無痕模式的提示。</td></tr><tr><td>下載檔找不到</td><td>查看瀏覽器下載紀錄；本工具不會自動寫回原始照片資料夾。</td></tr><tr><td>手改程式後所有按鈕失效</td><td>v5.9 的腳本受 CSP hash 限制。修改 JavaScript 後須更新 hash，不要直接關閉防護。</td></tr></table>
-<h2>本機處理的範圍</h2>
-<p>工具正常流程不呼叫圖片上傳 API，也不覆寫原圖。線上載入仍會連到 GitHub Pages；點正式網站或 Star 會連到對應網站。版型是本機瀏覽器資料，不是加密保險箱。</p>
-<p>請勿把客戶照片、訂單、Token、密碼、.env 或 SQL 備份提交到公開 GitHub。輸出檔名、模板文字與 ZIP 清單也可能暴露客資。</p>
-<h2>交付包上傳</h2>
-<p>先匯出現有版型備份。ZIP 解壓後，把<b>最外層資料夾裡的檔案與子資料夾</b>上傳 repo 根目錄，覆蓋同名檔案；不要只上傳 ZIP，也不要讓 index.html 多包一層。詳細步驟見 docs/DEPLOYMENT.md。</p>
-<p>SECURITY.md 只是回報政策。GitHub 私下漏洞回報仍需維護者自行開啟；本次沒有替你改 GitHub 或正式站設定。此包經過限定回歸測試，不代表零漏洞。</p>
-<div class="mission-box">希望這個工具能幫助相關產業的各位節省時間，把省下的時間留給家人，也留給自己喜歡的事情。</div>
-<p class="caption">文件依本次 v5.9 交付程式編寫。瀏覽器儲存與 GitHub 設定依官方文件核對；實際部署狀態請由維護者確認。</p>
-</section></body></html>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'none'; style-src 'unsafe-inline'; img-src 'self'; base-uri 'none'; form-action 'none'"><meta name="referrer" content="no-referrer"><title>沂恩圖片工具 v6.2 使用說明</title><style>body{max-width:980px;margin:32px auto;padding:0 24px;font:15px/1.85 "Segoe UI","Microsoft JhengHei",sans-serif;color:#243c33;background:#f5f8f6}main{padding:32px 42px;background:white;border:1px solid #dbe7df;border-radius:14px}h1{font-size:28px;border-bottom:3px solid #17634c;padding-bottom:16px;color:#164d3c}h2{font-size:20px;margin-top:32px;color:#17634c}h3{font-size:17px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #dbe4de;padding:9px;text-align:left}th{background:#ecf5ef}img{max-width:100%;border:1px solid #dce4df;border-radius:9px}code{background:#eff4f1;padding:2px 5px;font-size:13px}pre{white-space:pre-wrap;padding:14px;background:#eff4f1;border-radius:8px}a{color:#17664c}.no-print{font-size:13px;margin:12px 0}.cap{font-size:12px;color:#718779}@media print{@page{size:A4;margin:17mm}body{background:white;margin:0;padding:0;font-size:11pt;line-height:1.7}main{padding:0;border:0}h1{font-size:23pt}h2{font-size:16pt;break-after:avoid}table,img{break-inside:avoid}a{color:inherit}.no-print{display:none}}</style></head><body><p class="no-print"><a href="../index.html">← 回工具</a>　使用瀏覽器列印（Ctrl+P）可列印本說明。</p><main><h1>沂恩圖片工具 v6.2 使用說明</h1>
+<h2>開啟</h2>
+<p>將 ZIP 解壓縮，使用 Chrome 或 Edge 開 <code>index.html</code>。上方按「圖片工具箱・單張 / 批次」。不需 Python、BAT、後端、帳密或安裝模型。原有對比製作仍在原本工作區。</p>
+<p>新版工具箱採左側工具列，左邊照片清單、中間預覽、右邊目前工具設定。點「回對比工作區」可返回；兩邊共用照片清單，但各自保留自己的編輯資料。</p>
+<figure><img src="screenshots/toolbox.webp" alt="工具箱操作示意"><figcaption class="cap">合成示意素材；不是客戶照片，也不是清洗成果。</figcaption></figure><h2>快速單張流程</h2>
+<ol><li>按「加入照片」，或把照片拖進工具箱。資料夾可用「加入資料夾」。</li><li>點左側縮圖，成為目前編輯照片。這不代表勾選批次。</li><li>選「尺寸壓縮」，依用途選最長邊、固定畫布、百分比或原尺寸。</li><li>需要轉正時用「旋轉」。需要去掉多餘邊緣時用「裁切」。</li><li>到「浮水印」啟用文字，或選一張 Logo；可在成品上拖曳。</li><li>有個資時到「隱私遮蔽」畫框。文字個資建議實色遮蔽。</li><li>按「看成品」確認構圖與遮蔽，再按「輸出目前單張」。</li></ol>
+<h2>尺寸與壓縮</h2>
+<p>「最長邊等比縮放」將原圖最長邊縮到指定尺寸；預設不放大原圖。「指定畫布寬高」固定整張成品的尺寸，圖片本身保持比例。</p>
+<ul><li>完整保留：整張照片都保留，不足處填入背景色或透明。</li><li>填滿：填滿畫布，部分邊緣可能被裁掉。</li><li>允許放大：勾選後才允許把低像素照片放大，不代表創造真實細節。</li></ul>
+<p>旋轉後，等比模式會用旋轉後長寬計算。對固定畫布，不會把直圖硬拉成橫圖。</p>
+<p>輸出格式可選 WEBP、PNG、JPG。JPG 不支援本工具的透明背景，會使用所選背景色。PNG 不使用有損品質滑桿。</p>
+<p>目標容量填 0 表示不限制；例如填 300 表示以 300 × 1024 bytes 為搜尋目標。容量搜尋只降低 JPEG / WEBP 品質至下限 40；若仍超標會提示，不會私自改尺寸。</p>
+<p>「計算目前格式容量」會實際編碼，顯示 KB / MB 及 bytes；設定變更後會顯示待計算。尺寸與檔案容量是兩種不同的大小。</p>
+<h2>裁切、旋轉與一般加強</h2>
+<p>裁切工具會顯示原始方向的圖片選區，不是成品。可拉四角、拖框內移位或在框外重新畫。比例可選自由、1:1、16:9、4:5、3:4、4:3。按「完成選區 → 看成品」檢查結果。</p>
+<p>旋轉提供左右 90°、任意角度及水平／垂直鏡像。一般加強提供亮度、對比、飽和度及銳利化；「恢復原貌數值」會把這四項回到預設值。</p>
+<p>清洗成果建議保持前後影像條件可比較，不把調色或修圖說成清洗效果。本版沒有 AI 放大、失焦修復或 AI 自動去背。</p>
+<h2>文字與 Logo</h2>
+<p>文字與 Logo 分別有位置、大小及不透明度設定。勾選顯示後，在「成品預覽」拖動物件本體移動，拖右下角縮放。</p>
+<p>文字可用一鍵靠左下、置中、靠右下。位置百分比代表物件可移動的範圍，不是把文字中心硬放到畫布邊緣。Logo 等比縮放。</p>
+<p>Logo 支援 PNG、JPG、WEBP，單張上限 10 MiB、1600 萬像素。Logo 圖檔本身只存在本次分頁，不會放進慣用版型 JSON。</p>
+<h2>隱私遮蔽</h2>
+<p>在原圖上畫遮蔽框或按「新增框」，點框選取。框內可拖移、四角可縮放；按「複製選取」新增第二個同樣的框，「刪除」只刪目前選中的框。</p>
+<p>方式有全不透明實色、模糊、馬賽克。輸出時，遮蔽位置會隨圖片裁切與旋轉一起轉換，不會因批次處理被略過。</p>
+<p>請對姓名、電話、地址使用實色遮蔽；模糊與馬賽克不提供無法復原或識別的保證。畫面中的「查看原圖」會顯示未編輯照片，僅供核對，輸出仍然依照設定遮蔽。</p>
+<p>每張最多 40 個遮蔽框。正式分享前，請放大檢查輸出檔案是否仍有可辨認個資。</p>
+<h2>標記圖卡</h2>
+<p>可增加箭頭、矩形框、圈選與圖上文字，設定顏色。先按「新增標記」，再在成品上拖曳位置或右下角縮放。單張最多 40 個標記。</p>
+<p>這些是成品排版，不是原圖分析。改了裁切或旋轉後，請核對箭頭是否仍指向正確地方。</p>
+<h2>勾選批次</h2>
+<p>左邊每張有勾選框，只有勾選的照片會輸出。點縮圖只是切換目前編輯照片。可先搜尋檔名，再按「勾選搜尋結果」；「取消全部」會取消所有勾選。</p>
+<p>每張都保留自己的設定。先把某張調好，勾選其他照片，按「將目前通用設定套到勾選照片」，可統一尺寸、格式、調色及浮水印。各張裁切、遮蔽與標記不會被別張選區覆蓋。</p>
+<p>按「輸出勾選照片 → ZIP」。批次最多 80 張、合計輸出上限 256 MiB。檔名重複會加編號，ZIP 附 <code>export_report.json</code>。報告包含成功／失敗、尺寸、bytes、局部編輯數與容量警告；報告也含原檔名，分享前請確認檔名沒有個資。</p>
+<p>處理中可按「停止批次」，會在目前編碼完成後停止，沒有產出不完整 ZIP。批次不修改原始檔案。</p>
+<h2>工具箱慣用版型</h2>
+<p>先調整好目前照片的通用設定，再到「慣用版型」輸入名稱，按「儲存目前通用設定」。最多 12 組；同名會先詢問覆寫。</p>
+<p>會儲存尺寸、格式、品質、旋轉、一般加強、文字、Logo 位置等通用參數；不儲存照片、Logo 圖檔、裁切、遮蔽或標記。</p>
+<p>可匯出／匯入 JSON 備份。這是圖片工具箱自己的版型，與對比工作區的慣用版型不同。舊對比版型仍在原工作區使用。</p>
+<p>本機 HTML 的 localStorage 儲存方式可能依瀏覽器和檔案位置不同而改變。清除網站資料、換瀏覽器或檔名後不能假設版型仍在；請先匯出 JSON。若看到「僅暫存分頁」，務必在關閉前匯出。</p>
+<h2>與對比工作區搭配</h2>
+<p>單張修整完成後可按「加入對比素材」。程式會產生一張已處理的 PNG 加入照片清單，原圖仍保留。回對比工作區後，把新圖指定為洗前或洗後即可。</p>
+<p>原對比工作區的 WEBP / PNG / SVG、標題、店名、背景橫條、批次對比、旋轉鎖定、安全框、FB / IG 比例模擬沿用。SVG 是內嵌 PNG，不是可拆開編輯的向量稿。</p>
+<h2>快捷鍵</h2>
+<table><tr><th>按鍵</th><th>工具箱操作</th></tr><tr><td>Ctrl + Z</td><td>上一步</td></tr><tr><td>Ctrl + Y / Ctrl + Shift + Z</td><td>下一步</td></tr><tr><td>Delete / Backspace</td><td>刪除選取的遮蔽或標記</td></tr><tr><td>Ctrl + D</td><td>複製選取的遮蔽框</td></tr><tr><td>方向鍵</td><td>微調選取的裁切、遮蔽或標記</td></tr><tr><td>Shift + 方向鍵</td><td>較大幅度微調</td></tr><tr><td>Esc</td><td>回對比工作區；編碼中需先等待或停止</td></tr></table>
+<p>在文字、數字輸入欄內，Delete 和方向鍵保留原本的輸入行為，不會誤刪遮蔽框。</p>
+<h2>保存與限制</h2>
+<p>照片和工作內容只在目前分頁。切換照片會保留各自設定，但關閉或重新整理後不保留。慣用版型不是完整專案保存，請在關閉前輸出圖片。</p>
+<p>單張輸入上限 50 MiB、6000 萬像素；整批來源上限 256 MiB、合計 1.2 億像素與 256 張。最終輸出單邊上限 8192 px、總像素 2000 萬。設定 JSON 上限 1 MiB。</p>
+<p>支援 JPEG、PNG、WEBP、BMP，GIF 固定載入時一幀。HEIC、TIFF、SVG 等不直接匯入，請先轉換。工具箱沒有 AI 自動去背或網頁轉圖片。</p>
+<p>只有故意點選正式網站或 GitHub 連結才會離開工具；圖片編輯流程沒有外部 API、CDN、模型下載或主動網路傳輸。仍需注意瀏覽器擴充套件、電腦本身與自行分享的輸出檔安全。</p>
+<h2>檔案在哪裡</h2>
+<p>輸出會交給瀏覽器下載，通常在瀏覽器設定的下載位置。按 Chrome / Edge 的下載清單查看；不是 BAT 版原來的 <code>output</code> 資料夾。</p>
+<p>這個 ZIP 內已包含 <code>index.html</code>。要更新 GitHub Pages，請看同資料夾的 <code>DEPLOYMENT.md</code>。不要只把整個 ZIP 上傳，Pages 不會把 ZIP 自動解開當成工具。</p>
+<hr>
+<p>希望這個工具能幫助相關產業的各位節省時間，把省下的時間留給家人，也留給自己喜歡的事情。</p></main></body></html>

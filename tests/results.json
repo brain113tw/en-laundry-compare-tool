@@ -1,0 +1,563 @@
+{
+  "version": "6.2",
+  "browser": "144.0.7559.96",
+  "environment": "Linux Chromium headless via Playwright; HTML loaded with page.set_content because local navigation is restricted in test environment.",
+  "totals": {
+    "checks": 108,
+    "passed": 108
+  },
+  "limitations": [
+    "No verification of the user Windows installation.",
+    "Native Windows file drag, file:// navigation, OS save dialog and GitHub Pages deployment were not tested end-to-end.",
+    "Browser localStorage denied-path was tested; persistent cross-session storage not tested end-to-end.",
+    "No AI background removal, AI upscaling or HTML capture is included."
+  ],
+  "results": {
+    "comparison": [
+      {
+        "test": "CSP script hash matches source",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Starts without JS errors",
+        "passed": true,
+        "detail": "[]"
+      },
+      {
+        "test": "Storage unavailable handled",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Import normal PNGs",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Output size values exist",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Left blank area handles drop",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Reject renamed SVG input",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Invalid cfg rejected 1",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Invalid cfg rejected 2",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Invalid cfg rejected 3",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Invalid cfg rejected 4",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Invalid cfg rejected 5",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Invalid cfg rejected 6",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Invalid cfg rejected 7",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Invalid cfg rejected 8",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Reject prototype",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Reject deep",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Reject oversize",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Reject syntax",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "No prototype pollution",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "JSON size guard precedes reading",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "v5.8 import compatibility + clamp + allowlist",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Fractional positions preserved",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Watermark text above background hit",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Dragging watermark leaves bar unchanged",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Wheel over non-photo objects no exception",
+        "passed": true,
+        "detail": "[]"
+      },
+      {
+        "test": "WEBP real encoding / dimensions / bytes",
+        "passed": true,
+        "detail": "(1600, 900) / 24594"
+      },
+      {
+        "test": "PNG real encoding / dimensions / bytes",
+        "passed": true,
+        "detail": "(1600, 900) / 83639"
+      },
+      {
+        "test": "SVG real encoding / dimensions / bytes",
+        "passed": true,
+        "detail": "(1600, 900) / 111835"
+      },
+      {
+        "test": "Guides not exported",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "ZIP Unicode filename and CRC",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Storage failure reported (not falsely saved)",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Bad favorites keep existing entries",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Template name rendered as literal text",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Undo config works",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Redo config works",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Desktop has no horizontal overflow",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Unhashed inline script blocked",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "unsafe-eval not allowed in policy",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Fetch blocked by CSP",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "No ordinary remote subresource requests",
+        "passed": true,
+        "detail": "['blob:null/79254505-64b8-47f5-b7db-2a44a1c575bc', 'blob:null/ecd6889f-dcfb-423c-ae3e-af81f483aa3e', 'blob:null/4c430753-963a-445e-b5b4-2309f129d54d']"
+      },
+      {
+        "test": "Clear resets undo before releasing sources",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "No unhandled JS runtime errors",
+        "passed": true,
+        "detail": "[]"
+      }
+    ],
+    "toolbox": [
+      {
+        "test": "Both inline script hashes match CSP",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Initialization without script errors",
+        "passed": true,
+        "detail": "[]"
+      },
+      {
+        "test": "Existing comparison imports and renders",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Full-screen toolbox opens with shared photo library",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Batch starts with no implicit selections",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Default sizing never stretches/upscales",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "LocalStorage unavailable shows explicit fallback",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Full unaltered raster keeps source dimensions",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Square canvas letterboxes instead of stretching",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "PNG preserves transparent margins",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "JPG flattens transparent margins to chosen background",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "90 degree rotation swaps width and height",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Rotation preserves coloured calibration geometry",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Crop ratio set on source gives 600x600",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Crop mode is clearly labeled non-export preview",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Crop really changes encoded geometry",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Solid privacy mask is 100% opaque in output",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Pointer drag moves actual privacy region",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Duplicate adds independent privacy mask",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Delete only affects selected mask",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Toolbox undo restores deleted mask",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Toolbox redo reapplies delete",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Second image has its own empty masks",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "First image retains its privacy edits",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Numeric zero opacity and x/y values are respected",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Logo can be loaded offline",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Text watermark is draggable in final preview",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Arrow annotation added without altering source",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Saturation 0 reaches grayscale",
+        "passed": true,
+        "detail": "(134, 134, 134, 255)"
+      },
+      {
+        "test": "Original-look button resets tonal adjustments",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Sharpening preserves flat-region brightness",
+        "passed": true,
+        "detail": "(120, 130, 140, 255)"
+      },
+      {
+        "test": "Toolbox reuses image signature validation",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Whole toolbox accepts dropped files once",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Named preset kept in session",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Denied persistent save explicitly asks backup",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Invalid preset import is atomic",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Preset import validates and drops unknown fields",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Large JSON is rejected before parse",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Prototype key is rejected",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Presets export genuine JSON blob",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Real WEBP output dimensions, magic and byte count",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Real PNG output dimensions, magic and byte count",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Real JPG output dimensions, magic and byte count",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Batch exports only checked images",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Batch ZIP CRC and names valid",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Batch preserves each photo privacy masks",
+        "passed": true,
+        "detail": "[{'source': 'bag-before.png', 'file': 'bag-before.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 8206, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 1, 'annotations': 1, 'warning': ''}, {'source': 'bag-after.png', 'file': 'bag-after.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 6332, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 0, 'annotations': 0, 'warning': ''}]"
+      },
+      {
+        "test": "Masked batch image has opaque redaction pixels",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Batch processing does not switch or corrupt active photo",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Oversized output rejected without download",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "1366px interface no horizontal page overflow",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Mobile no horizontal overflow",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Return to existing comparison workspace works",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "No runtime JS errors during workflow",
+        "passed": true,
+        "detail": "[]"
+      },
+      {
+        "test": "No HTTP/S network requests from editor",
+        "passed": true,
+        "detail": "['blob:null/b976d43c-bcca-4179-9c49-109e3cd1453f', 'blob:null/8f87cfca-aecb-4e43-825c-ef7e8192f964', 'blob:null/592a2cb1-86ef-47d9-bd23-145fffb61f6c', 'blob:null/e3639919-3115-404b-875f-0a35a3ffe7ef']"
+      }
+    ],
+    "additional": [
+      {
+        "test": "Crop + rotation retain privacy coordinate transform",
+        "passed": true,
+        "detail": "(450, 600)"
+      },
+      {
+        "test": "Local mosaic rendering completes",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Local blur rendering completes",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Toolbox string sizes rejected",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Toolbox unknown colour format rejected",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Unreachable target never silently downsizes",
+        "passed": true,
+        "detail": "已交給瀏覽器下載：bag-before_edited.webp · 800 × 600 · 3.7 KB；未達容量目標；保留尺寸、品質下限 40。"
+      },
+      {
+        "test": "Mask corner resize changes width and height",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Text-field Delete retains privacy masks",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Locked crop aspect retained when corner resized",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Processed image returns to comparison library",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "No runtime errors in extra cases",
+        "passed": true,
+        "detail": "[]"
+      }
+    ]
+  }
+}
