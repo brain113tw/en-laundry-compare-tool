@@ -1,0 +1,35 @@
+沂恩對比圖管理器 / 圖片工具箱 v6.2
+
+一、在自己的電腦使用
+1. 先將 ZIP 全部解壓縮到新的資料夾。
+2. 用 Chrome 或 Edge 開 index.html。
+3. 按上方「圖片工具箱・單張 / 批次」進入新介面。
+4. 按「加入照片」，點縮圖編輯；照片旁勾選框是用於批次。
+5. 裁切、遮蔽後，按「看成品」確認，再輸出。
+
+不需要 Python、BAT、後端，也不用執行 tools 或 tests 資料夾中的開發者程式。
+
+en_compare_manager_v6_2_toolbox.html 與 index.html 的程式內容相同。單獨一個 HTML 也能處理照片，完整說明與截圖則在 ZIP 的 docs 資料夾。
+
+二、更新到 GitHub
+1. 先在舊工具匯出對比慣用版型 JSON 備份。
+2. 將解壓縮後的檔案與 docs、tools、tests 資料夾上傳到原 repo 根目錄；覆蓋同名檔案。
+3. 一定要包含根目錄 index.html。不要只上傳 ZIP，也不要多包一層資料夾。
+4. Commit message 可填：Update to v6.2 toolbox
+5. 等待對應這次新提交的 Pages 部署完成，再檢查左上顯示 v6.2。
+
+這個交付包沒有替你變更 GitHub 或 laundry.com.tw。
+
+三、重要差異
+- 圖片工具箱：WEBP / PNG / JPG。
+- 原有對比工作區：WEBP / PNG / SVG（SVG 為內嵌 PNG）。
+- 工具箱與對比的慣用版型分開儲存，請各自匯出備份。
+- 照片 / Logo / 裁切 / 遮蔽只在目前分頁保留，關閉前先輸出。
+- 本機 HTML 更換檔名或位置，版型可能不會自動共用；請用 JSON 備份搬移。
+- 只有左側勾選的圖片會納入批次；每張遮蔽會保留，不會被略過。
+- 沒有 AI 放大、自動去背、HTML 轉圖片、後端或外部 API。
+
+四、說明書
+開 docs/USER_GUIDE.html 可閱讀或用瀏覽器列印。
+詳細 GitHub 更新方式見 docs/DEPLOYMENT.md。
+限定範圍測試結果見 docs/TEST_RESULTS.md，不等同所有裝置或所有情境皆已驗證。
