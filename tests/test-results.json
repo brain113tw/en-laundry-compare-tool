@@ -1,0 +1,223 @@
+{
+  "browser": "144.0.7559.96",
+  "platform": "Linux; Chromium headless, about:blank set_content (navigation blocked by environment policy)",
+  "results": [
+    {
+      "test": "CSP script hash matches source",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Starts without JS errors",
+      "passed": true,
+      "detail": "[]"
+    },
+    {
+      "test": "Storage unavailable handled",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Import normal PNGs",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Output size values exist",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Left blank area handles drop",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Reject renamed SVG input",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Invalid cfg rejected 1",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Invalid cfg rejected 2",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Invalid cfg rejected 3",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Invalid cfg rejected 4",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Invalid cfg rejected 5",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Invalid cfg rejected 6",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Invalid cfg rejected 7",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Invalid cfg rejected 8",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Reject prototype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Reject deep",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Reject oversize",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Reject syntax",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "No prototype pollution",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "JSON size guard precedes reading",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "v5.8 import compatibility + clamp + allowlist",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Fractional positions preserved",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Watermark text above background hit",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Dragging watermark leaves bar unchanged",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Wheel over non-photo objects no exception",
+      "passed": true,
+      "detail": "[]"
+    },
+    {
+      "test": "WEBP real encoding / dimensions / bytes",
+      "passed": true,
+      "detail": "(1600, 900) / 24594"
+    },
+    {
+      "test": "PNG real encoding / dimensions / bytes",
+      "passed": true,
+      "detail": "(1600, 900) / 83639"
+    },
+    {
+      "test": "SVG real encoding / dimensions / bytes",
+      "passed": true,
+      "detail": "(1600, 900) / 111835"
+    },
+    {
+      "test": "Guides not exported",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "ZIP Unicode filename and CRC",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Storage failure reported (not falsely saved)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Bad favorites keep existing entries",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Template name rendered as literal text",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Undo config works",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Redo config works",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Desktop has no horizontal overflow",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Unhashed inline script blocked",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "unsafe-eval not allowed in policy",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "Fetch blocked by CSP",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "No ordinary remote subresource requests",
+      "passed": true,
+      "detail": "['blob:null/8aa7d23d-6923-488f-9d26-7e6795bc81d5', 'blob:null/e45a60e7-1826-42f7-8bc7-45541afbc1da', 'blob:null/b3eed809-76a7-4978-acea-f7af26177cf1']"
+    },
+    {
+      "test": "Clear resets undo before releasing sources",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "No unhandled JS runtime errors",
+      "passed": true,
+      "detail": "[]"
+    }
+  ],
+  "unhandled_errors": [],
+  "storage_test": "Storage-denied real path tested; cross-session persistence not browser-end-to-end verified."
+}

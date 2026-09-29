@@ -1,0 +1,38 @@
+沂恩對比圖管理器 v5.9｜完整交付包
+
+這份包包含新版程式、GitHub README、安全回報政策、使用說明、測試紀錄與示意截圖。
+尚未替你修改 GitHub、Pages 或 laundry.com.tw。
+
+【先備份】
+在舊工具的「05 我的慣用版型」按「匯出慣用版型」，也可按「匯出設定」。
+備份留在你的電腦，不要把客戶照片或含個資的設定一起上傳 GitHub。
+
+【自己先用】
+解壓縮全部檔案，使用 Chrome / Edge 開啟 index.html。
+不需要安裝 Python 或 Node。tools/ 和 tests/ 只是供開發者維護使用。
+列印手冊：docs/USER_GUIDE.pdf（7 頁）。
+
+【更新 GitHub】
+1. 到你原本的 en-laundry-compare-tool 專案，選 Add file → Upload files。
+2. 上傳解壓縮後的全部內容，讓 index.html 直接在 repo 根目錄；不要只上傳 ZIP。
+3. 覆蓋 index.html、README.md，以及 en_compare_manager_v5_8.html。
+   這次的 v5_8 檔只是相容轉址入口，保留舊網址，但不再執行舊版程式。
+4. 連同 docs/、tools/、tests/、SECURITY.md、CHANGELOG.md、.nojekyll、.gitignore、.gitattributes 一起放上去。
+5. Commit 後確認部署，再打開工具核對左上角顯示 v5.9。
+   詳細說明：docs/DEPLOYMENT.md。
+
+Commit message 可用：
+Update to v5.9: validated imports, CSP hash, documentation and footer
+
+【仍需由你操作】
+SECURITY.md 是回報政策文件，不會自動開啟 GitHub 的私下漏洞回報。
+啟用位置：Settings → Advanced Security → Private vulnerability reporting → Enable。
+
+【注意】
+照片及批次清單不是永久保存；重新整理前請輸出成品。
+跨電腦、跨瀏覽器、跨線上/離線入口時，請使用 JSON 備份移轉版型。
+測試紀錄記載 43 項限定範圍檢查；不是零漏洞保證或所有瀏覽器認證。
+自行修改 index.html 的 JavaScript 後，需執行 node tools/update_csp.mjs 更新 CSP 雜湊。
+只更新一般文件不需要重算 JavaScript 雜湊。
+
+希望這個工具能幫助相關產業的各位節省時間，把省下的時間留給家人，也留給自己喜歡的事情。
