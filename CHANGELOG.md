@@ -1,3 +1,11 @@
+# v6.2 後續修正 — 檢查回饋
+
+補上先前漏傳的 `.gitattributes`（LF 換行）與 `.gitignore`；少了 LF 設定時，Windows 端 Git 可能把 `index.html` 轉成 CRLF，使 CSP 雜湊失效而封鎖全部 JavaScript。`tools/update_csp.mjs` 改為支援多個內嵌腳本並同步 `en_compare_manager_v6_2_toolbox.html`，與 `tools/update_csp.py` 行為一致。
+
+對比工作區：「儲存目前設定」在畫布超過 2000 萬像素時改為在狀態列顯示原因，不再產生未處理的例外。批次清單的開啟、移除與勾選現在都會寫入操作歷史，上一步不再一次跳回更早的狀態。重複加入同一張照片時會在紀錄說明並計入略過數。拖曳 BEFORE／AFTER 標籤與標題時的綠色吸附輔助線改為畫在元素實際位置（相對於所在格子）。移除狀態文字的簡體字執行期替換。
+
+`docs/USER_GUIDE.html` 加上不含 script 的 CSP 與 no-referrer。舊版對比工作區示意截圖改以本機 HTTP 方式重新擷取，不再出現測試環境「儲存被拒」的紅字。CSP 雜湊、SHA256SUMS 與測試紀錄已同步更新。
+
 # v6.2
 
 新增全畫面左側工具列；批次明確勾選照片；圖片工具箱獨立 12 組慣用版型與 JSON 備份；每張照片保留各自設定；新增箭頭、圈選、矩形框及圖上文字；單張完成後可加入對比素材。

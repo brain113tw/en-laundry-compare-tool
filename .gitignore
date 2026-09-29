@@ -1,0 +1,24 @@
+# 本機備份與客戶資料，不要放進公開 repo
+*.env
+.env*
+*.sql
+*.zip
+en_compare_settings_*.json
+en_compare_favorites_*.json
+customer/
+photos/
+私人/
+客戶/
+
+# 作業系統與編輯器
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# 開發測試產物
+node_modules/
+__pycache__/
+*.pyc
+en-compare-test-*/
