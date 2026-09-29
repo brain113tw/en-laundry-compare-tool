@@ -1,5 +1,5 @@
 {
-  "browser": "144.0.7559.96",
+  "browser": "141.0.7390.37",
   "platform": "Linux; Chromium headless, about:blank set_content (navigation blocked by environment policy)",
   "results": [
     {
@@ -135,17 +135,17 @@
     {
       "test": "WEBP real encoding / dimensions / bytes",
       "passed": true,
-      "detail": "(1600, 900) / 24594"
+      "detail": "(1600, 900) / 24762"
     },
     {
       "test": "PNG real encoding / dimensions / bytes",
       "passed": true,
-      "detail": "(1600, 900) / 83639"
+      "detail": "(1600, 900) / 87181"
     },
     {
       "test": "SVG real encoding / dimensions / bytes",
       "passed": true,
-      "detail": "(1600, 900) / 111835"
+      "detail": "(1600, 900) / 116559"
     },
     {
       "test": "Guides not exported",
@@ -205,7 +205,7 @@
     {
       "test": "No ordinary remote subresource requests",
       "passed": true,
-      "detail": "['blob:null/8aa7d23d-6923-488f-9d26-7e6795bc81d5', 'blob:null/e45a60e7-1826-42f7-8bc7-45541afbc1da', 'blob:null/b3eed809-76a7-4978-acea-f7af26177cf1']"
+      "detail": "['blob:null/f4f94b95-5769-492d-adb1-b5fbdcc12e76', 'blob:null/15360be7-af7a-4902-ba25-d73c7c805b6a', 'blob:null/2cd7164c-dd5c-43c4-af11-ee82dab7f17d']"
     },
     {
       "test": "Clear resets undo before releasing sources",

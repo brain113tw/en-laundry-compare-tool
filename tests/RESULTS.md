@@ -4,7 +4,7 @@
 
 ## 測試環境與限制
 
-Linux、Chromium **144.0.7559.96**，由 Playwright 控制 headless browser。執行環境的管理政策阻止 `file://` 和 HTTP 導覽，因此使用 **about:blank + set_content** 載入完整交付 HTML，未修改程式中的 CSP。
+Linux、Chromium **141.0.7390.37**（v5.9 首次交付時為 144.0.7559.96；後續修正版以此版本重跑，43 項仍全部通過），由 Playwright 控制 headless browser。執行環境的管理政策阻止 `file://` 和 HTTP 導覽，因此使用 **about:blank + set_content** 載入完整交付 HTML，未修改程式中的 CSP。
 
 已測 DOM 拖放事件、input 匯入、主畫面實際指標拖曳、三格式 Blob 編碼、ZIP 結構與 CRC、惡意／損壞 JSON 拒絕、CSP 阻擋額外 inline script、儲存被拒時的降級。輸出檔由測試程式讀出並核對，而非端到端驗證 Windows 下載介面。
 
@@ -70,4 +70,4 @@ python -m playwright install chromium
 python tests/check_release.py
 ```
 
-原始紀錄：[test-results.json](test-results.json)。測試產物與瀏覽器版本不同可能導致容量差異，不以固定 bytes 作跨版本基準。
+原始紀錄：[test-results.json](test-results.json)。docs/screenshots 的示意截圖另以本機 HTTP 伺服器載入後擷取，因此顯示正常的 localStorage 儲存狀態，與本表第 3、32 項刻意測試的「儲存被拒」畫面不同。測試產物與瀏覽器版本不同可能導致容量差異，不以固定 bytes 作跨版本基準。
