@@ -61,6 +61,10 @@ with sync_playwright() as p:
   page.click('[data-tb-tab="crop"]');page.click('#tbCropClear');page.click('[data-tb-tab="privacy"]');page.click('#tbMaskAdd');page.wait_for_timeout(100)
   im,_=coreImage(page);d=state(page)['doc'];m=d['masks'][0];x=int((m['x']+m['w']/2)*800);y=int((m['y']+m['h']/2)*600)
   record('Solid privacy mask is 100% opaque in output',im.getpixel((x,y))==(20,25,23,255))
+  maskdiff='''(type)=>{const s=EnToolbox.getState(),src=item(s.active);const d=JSON.parse(JSON.stringify(s.doc)),base=JSON.parse(JSON.stringify(s.doc));d.cfg.sizeMode=base.cfg.sizeMode='original';d.crop=base.crop=null;const m={x:.02,y:.02,w:.2,h:.15};base.masks=[];d.masks=[{...m,type,strength:20}];const a=EnToolbox.core.renderDoc(src,d,null),b=EnToolbox.core.renderDoc(src,base,null);const W=a.g.W,H=a.g.H,x0=Math.floor(m.x*W),y0=Math.floor(m.y*H),w=Math.floor(m.w*W),h=Math.floor(m.h*H);const pa=a.cv.getContext('2d').getImageData(x0,y0,w,h).data,pb=b.cv.getContext('2d').getImageData(x0,y0,w,h).data;let diff=0,n=0;for(let i=0;i<pa.length;i+=4){diff+=Math.abs(pa[i]-pb[i])+Math.abs(pa[i+1]-pb[i+1])+Math.abs(pa[i+2]-pb[i+2]);n++;}return diff/n;}'''
+  record('Blur privacy mask changes the masked region',page.evaluate(maskdiff,'blur')>3,page.evaluate(maskdiff,'blur'))
+  record('Mosaic privacy mask changes the masked region',page.evaluate(maskdiff,'mosaic')>3,page.evaluate(maskdiff,'mosaic'))
+  record('Mask strength is defined in source pixels, independent of crop',page.evaluate('''()=>{const s=EnToolbox.getState(),src=item(s.active);const full=JSON.parse(JSON.stringify(s.doc)),cropped=JSON.parse(JSON.stringify(s.doc));const m={x:.3,y:.2,w:.2,h:.2,type:'mosaic',strength:40};full.masks=[m];full.crop=null;cropped.masks=[m];cropped.crop={x:.25,y:.1,w:.5,h:.5};cropped.cfg.sizeMode='original';full.cfg.sizeMode='original';const a=EnToolbox.core.renderDoc(src,full,null),b=EnToolbox.core.renderDoc(src,cropped,null);const run=(cv,x0,y0,w)=>{const d=cv.getContext('2d').getImageData(x0,y0,w,1).data;let changes=0;for(let i=4;i<d.length;i+=4)if(d[i]!==d[i-4]||d[i+1]!==d[i-3]||d[i+2]!==d[i-2])changes++;return changes;};const ya=Math.floor((m.y+m.h/2)*src.h),yb=Math.floor((m.y+m.h/2-cropped.crop.y)*src.h);const ca=run(a.cv,Math.floor(m.x*src.w)+2,ya,Math.floor(m.w*src.w)-4),cb=run(b.cv,Math.floor((m.x-cropped.crop.x)*src.w)+2,yb,Math.floor(m.w*src.w)-4);return Math.abs(ca-cb)<=2;}'''))
   # Pointer drag actual mask center; no container misalignment.
   bb=page.locator('#tbOverlay').bounding_box();px=bb['x']+(m['x']+m['w']/2)*bb['width'];py=bb['y']+(m['y']+m['h']/2)*bb['height']
   page.mouse.move(px,py);page.mouse.down();page.mouse.move(px+35,py+20,steps=6);page.mouse.up();page.wait_for_timeout(90)
@@ -128,6 +132,10 @@ with sync_playwright() as p:
    imz=Image.open(io.BytesIO(z.read(rep[0]['file']))).convert('RGB');record('Masked batch image has opaque redaction pixels',sum(1 for p in imz.getdata() if max(abs(p[j]-[20,25,23][j]) for j in range(3))<6)>2000)
   record('Batch processing does not switch or corrupt active photo',state(page)['active']==ids[0] and state(page)['doc']['cfg']==value_before)
   page.click('[data-tb-tab="size"]');value(page,'sizeMode','box');value(page,'width',8192);value(page,'height',8192);num=page.evaluate('savedFiles.length');page.click('#tbExport');page.wait_for_function('() => (!EnToolbox.getState().busy)');record('Oversized output rejected without download',page.evaluate('savedFiles.length')==num and '超過' in page.locator('#tbStatus').text_content())
+  errs=len(errors);page.click('[data-tb-tab="presets"]');page.fill('#tbPresetName','big');page.click('#tbSavePreset');page.wait_for_timeout(80)
+  record('Oversized preset save reports instead of throwing',len(errors)==errs and '超過' in page.locator('#tbStatus').text_content() and not any(x['name']=='big' for x in state(page)['presets']))
+  record('Imported preset names drop control characters',page.evaluate('''()=>EnToolbox.core.cleanPresetList({type:'en-toolbox-presets',presets:[{name:'a\\nb\\u0000c',cfg:{quality:80}}]})[0].name''')=='abc')
+  page.click('[data-tb-tab="size"]')
   # Return normal settings and take real UI captures (no customer photos).
   page.click('[data-tb-preset="web"]');value(page,'format','webp');page.wait_for_timeout(120);page.screenshot(path=str(w/'editor62.png'))
   page.set_viewport_size({'width':1366,'height':768});page.wait_for_timeout(140);page.screenshot(path=str(w/'layout1366.png'))
@@ -137,6 +145,11 @@ with sync_playwright() as p:
   page.set_viewport_size({'width':390,'height':844});page.wait_for_timeout(120);record('Mobile no horizontal overflow',page.evaluate('document.querySelector("#tbApp").scrollWidth<=window.innerWidth'))
   page.set_viewport_size({'width':1440,'height':1000});page.click('#tbBack');page.wait_for_timeout(100);record('Return to existing comparison workspace works',not page.locator('#tbApp').is_visible() and page.locator('#preview').is_visible())
   record('No runtime JS errors during workflow',not errors,errors)
+  # Engines without CanvasRenderingContext2D.filter (Safari < 18): blur mask must still hide the region and tonal sliders must be disabled.
+  page.evaluate('EnToolbox.core.setFilterSupport(false)');page.wait_for_timeout(60);errs=len(errors)
+  record('Blur mask still masks without canvas filter support',page.evaluate(maskdiff,'blur')>3 and len(errors)==errs,page.evaluate(maskdiff,'blur'))
+  record('Tonal sliders disabled without canvas filter support',page.locator('#tb-brightness').is_disabled())
+  page.evaluate('EnToolbox.core.setFilterSupport(true)')
   record('No HTTP/S network requests from editor',not any(x.startswith(('https://','http://')) for x in req),req[:4])
  except Exception as e:
   page.screenshot(path=str(w/'test_failure.png'));print(traceback.format_exc(),flush=True)

@@ -6,7 +6,7 @@
 
 v5.8 基線 SHA-256：`1d845ba697bf384bb6f246be6de6fe518fc834fb18154774909f03023e7d2f1a`。
 
-v6.2 合併後續修正版 `index.html` SHA-256：`55c8f6cb4bbedb2266174426ba7b31be9c68183d3e5ae86548e892800249f998`。
+v6.2 工具箱完整檢查修正版 `index.html` SHA-256：`53784c55adcdab0f3b5dd7afee2d838b7624806d6a82e66fa4fc7704fa11133d`。
 
 ## 原始程式中可核對的內容
 

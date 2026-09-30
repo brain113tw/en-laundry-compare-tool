@@ -1,10 +1,10 @@
 {
   "version": "6.2",
-  "browser": "144.0.7559.96",
+  "browser": "141.0.7390.37",
   "environment": "Linux Chromium headless via Playwright; HTML loaded with page.set_content because local navigation is restricted in test environment.",
   "totals": {
-    "checks": 108,
-    "passed": 108
+    "checks": 115,
+    "passed": 115
   },
   "limitations": [
     "No verification of the user Windows installation.",
@@ -147,17 +147,17 @@
       {
         "test": "WEBP real encoding / dimensions / bytes",
         "passed": true,
-        "detail": "(1600, 900) / 24594"
+        "detail": "(1600, 900) / 24762"
       },
       {
         "test": "PNG real encoding / dimensions / bytes",
         "passed": true,
-        "detail": "(1600, 900) / 83639"
+        "detail": "(1600, 900) / 87181"
       },
       {
         "test": "SVG real encoding / dimensions / bytes",
         "passed": true,
-        "detail": "(1600, 900) / 111835"
+        "detail": "(1600, 900) / 116559"
       },
       {
         "test": "Guides not exported",
@@ -217,7 +217,7 @@
       {
         "test": "No ordinary remote subresource requests",
         "passed": true,
-        "detail": "['blob:null/79254505-64b8-47f5-b7db-2a44a1c575bc', 'blob:null/ecd6889f-dcfb-423c-ae3e-af81f483aa3e', 'blob:null/4c430753-963a-445e-b5b4-2309f129d54d']"
+        "detail": "['blob:null/45fa03e0-b9e7-4b93-998e-66416334d4e8', 'blob:null/5df03e2a-5a83-4ae1-99f6-e6fea7e30673', 'blob:null/fe60e26c-b88d-4d9e-957c-9a97a23f9ba9']"
       },
       {
         "test": "Clear resets undo before releasing sources",
@@ -313,6 +313,21 @@
       },
       {
         "test": "Solid privacy mask is 100% opaque in output",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Blur privacy mask changes the masked region",
+        "passed": true,
+        "detail": "39.0625"
+      },
+      {
+        "test": "Mosaic privacy mask changes the masked region",
+        "passed": true,
+        "detail": "17.666666666666668"
+      },
+      {
+        "test": "Mask strength is defined in source pixels, independent of crop",
         "passed": true,
         "detail": ""
       },
@@ -459,7 +474,7 @@
       {
         "test": "Batch preserves each photo privacy masks",
         "passed": true,
-        "detail": "[{'source': 'bag-before.png', 'file': 'bag-before.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 8206, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 1, 'annotations': 1, 'warning': ''}, {'source': 'bag-after.png', 'file': 'bag-after.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 6332, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 0, 'annotations': 0, 'warning': ''}]"
+        "detail": "[{'source': 'bag-before.png', 'file': 'bag-before.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 8204, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 1, 'annotations': 1, 'warning': ''}, {'source': 'bag-after.png', 'file': 'bag-after.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 5732, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 0, 'annotations': 0, 'warning': ''}]"
       },
       {
         "test": "Masked batch image has opaque redaction pixels",
@@ -473,6 +488,16 @@
       },
       {
         "test": "Oversized output rejected without download",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Oversized preset save reports instead of throwing",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Imported preset names drop control characters",
         "passed": true,
         "detail": ""
       },
@@ -497,9 +522,19 @@
         "detail": "[]"
       },
       {
+        "test": "Blur mask still masks without canvas filter support",
+        "passed": true,
+        "detail": "19.489722222222223"
+      },
+      {
+        "test": "Tonal sliders disabled without canvas filter support",
+        "passed": true,
+        "detail": ""
+      },
+      {
         "test": "No HTTP/S network requests from editor",
         "passed": true,
-        "detail": "['blob:null/b976d43c-bcca-4179-9c49-109e3cd1453f', 'blob:null/8f87cfca-aecb-4e43-825c-ef7e8192f964', 'blob:null/592a2cb1-86ef-47d9-bd23-145fffb61f6c', 'blob:null/e3639919-3115-404b-875f-0a35a3ffe7ef']"
+        "detail": "['blob:null/23030f85-bf1a-455d-8d8a-e17a5b81f221', 'blob:null/6e448ebd-e7ee-4537-9c94-0c79b198fc0c', 'blob:null/d253779f-0d7c-4234-b1de-5a48c84536ef', 'blob:null/3e9afdcf-a63e-4062-ac9c-54c81c9ee23c']"
       }
     ],
     "additional": [
