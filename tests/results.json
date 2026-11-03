@@ -1,10 +1,10 @@
 {
   "version": "6.2",
-  "browser": "141.0.7390.37",
+  "browser": "153.0.8010.12",
   "environment": "Linux Chromium headless via Playwright; HTML loaded with page.set_content because local navigation is restricted in test environment.",
   "totals": {
-    "checks": 115,
-    "passed": 115
+    "checks": 124,
+    "passed": 124
   },
   "limitations": [
     "No verification of the user Windows installation.",
@@ -145,6 +145,31 @@
         "detail": "[]"
       },
       {
+        "test": "Rotation changes natural split and auto height",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Rotated export differs from unrotated",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Rotation input clamped to 180",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Quick 90° button wraps around",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Rotation is undoable",
+        "passed": true,
+        "detail": ""
+      },
+      {
         "test": "WEBP real encoding / dimensions / bytes",
         "passed": true,
         "detail": "(1600, 900) / 24762"
@@ -152,12 +177,12 @@
       {
         "test": "PNG real encoding / dimensions / bytes",
         "passed": true,
-        "detail": "(1600, 900) / 87181"
+        "detail": "(1600, 900) / 87046"
       },
       {
         "test": "SVG real encoding / dimensions / bytes",
         "passed": true,
-        "detail": "(1600, 900) / 116559"
+        "detail": "(1600, 900) / 116379"
       },
       {
         "test": "Guides not exported",
@@ -217,7 +242,22 @@
       {
         "test": "No ordinary remote subresource requests",
         "passed": true,
-        "detail": "['blob:null/45fa03e0-b9e7-4b93-998e-66416334d4e8', 'blob:null/5df03e2a-5a83-4ae1-99f6-e6fea7e30673', 'blob:null/fe60e26c-b88d-4d9e-957c-9a97a23f9ba9']"
+        "detail": "['blob:null/2e3c1fd7-7e93-42f9-9ca0-5e8ff457fc76', 'blob:null/f2a95d15-d2ea-465c-9acf-99fed5a5e474', 'blob:null/ae9648b3-b31a-488e-8835-4724969d7403']"
+      },
+      {
+        "test": "Remove photo drops it from list, assignment and batch",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Removed photo is scrubbed from undo history",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Undo cannot resurrect a removed photo",
+        "passed": true,
+        "detail": ""
       },
       {
         "test": "Clear resets undo before releasing sources",
@@ -474,7 +514,7 @@
       {
         "test": "Batch preserves each photo privacy masks",
         "passed": true,
-        "detail": "[{'source': 'bag-before.png', 'file': 'bag-before.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 8204, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 1, 'annotations': 1, 'warning': ''}, {'source': 'bag-after.png', 'file': 'bag-after.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 5732, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 0, 'annotations': 0, 'warning': ''}]"
+        "detail": "[{'source': 'bag-before.png', 'file': 'bag-before.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 8258, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 1, 'annotations': 1, 'warning': ''}, {'source': 'bag-after.png', 'file': 'bag-after.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 5732, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 0, 'annotations': 0, 'warning': ''}]"
       },
       {
         "test": "Masked batch image has opaque redaction pixels",
@@ -517,6 +557,11 @@
         "detail": ""
       },
       {
+        "test": "Toolbox remove button drops the photo and keeps a valid active photo",
+        "passed": true,
+        "detail": ""
+      },
+      {
         "test": "No runtime JS errors during workflow",
         "passed": true,
         "detail": "[]"
@@ -534,7 +579,7 @@
       {
         "test": "No HTTP/S network requests from editor",
         "passed": true,
-        "detail": "['blob:null/23030f85-bf1a-455d-8d8a-e17a5b81f221', 'blob:null/6e448ebd-e7ee-4537-9c94-0c79b198fc0c', 'blob:null/d253779f-0d7c-4234-b1de-5a48c84536ef', 'blob:null/3e9afdcf-a63e-4062-ac9c-54c81c9ee23c']"
+        "detail": "['blob:null/46b32c41-3c4a-4d76-9165-f1bc8e304c90', 'blob:null/75a26bc0-4ef8-4e19-870b-6bf8ba28e744', 'blob:null/2e430145-fe39-45ea-b434-ecaf3ba0a1b2', 'blob:null/4919aa9e-9793-422a-bc78-855d6b0559e9']"
       }
     ],
     "additional": [

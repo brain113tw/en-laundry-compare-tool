@@ -144,6 +144,9 @@ with sync_playwright() as p:
   page.click('[data-tb-tab="mark"]');page.wait_for_timeout(100);page.screenshot(path=str(w/'mark62.png'))
   page.set_viewport_size({'width':390,'height':844});page.wait_for_timeout(120);record('Mobile no horizontal overflow',page.evaluate('document.querySelector("#tbApp").scrollWidth<=window.innerWidth'))
   page.set_viewport_size({'width':1440,'height':1000});page.click('#tbBack');page.wait_for_timeout(100);record('Return to existing comparison workspace works',not page.locator('#tbApp').is_visible() and page.locator('#preview').is_visible())
+  page.click('#toolboxOpen');page.wait_for_timeout(100);n=page.evaluate('S.items.length');page.locator('#tbFiles .tb-remove').first.click();page.wait_for_timeout(120)
+  record('Toolbox remove button drops the photo and keeps a valid active photo',page.evaluate('S.items.length')==n-1 and page.evaluate('!!item(EnToolbox.getState().active)') and page.locator('#tbFiles .tb-file').count()==n-1)
+  page.click('#tbBack');page.wait_for_timeout(60)
   record('No runtime JS errors during workflow',not errors,errors)
   # Engines without CanvasRenderingContext2D.filter (Safari < 18): blur mask must still hide the region and tonal sliders must be disabled.
   page.evaluate('EnToolbox.core.setFilterSupport(false)');page.wait_for_timeout(60);errs=len(errors)

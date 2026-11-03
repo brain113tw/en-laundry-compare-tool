@@ -75,6 +75,14 @@ with sync_playwright() as p:
  # Wheel events on labels/title/bar no longer access undefined image transforms.
  page.evaluate("(()=>{const ev=(r)=>{if(!r)return;const a=overlay.getBoundingClientRect();overlay.dispatchEvent(new WheelEvent('wheel',{clientX:a.x+(r.x+r.w/2)/geom.W*a.width,clientY:a.y+(r.y+r.h/2)/geom.H*a.height,deltaY:100,bubbles:true,cancelable:true}));};ev(titleRectFor(geom,S.cfg));ev(watermarkRectFor(geom,S.cfg));ev(watermarkBarRectFor(geom,S.cfg));ev(labelRectFor('before',geom,S.cfg));})()")
  record('Wheel over non-photo objects no exception',not errors,errors)
+ # Per-side rotation: layout follows the rotated bounding box, output really rotates, values are clamped and undoable.
+ record('Rotation changes natural split and auto height',page.evaluate('''()=>{const d=currentDoc();d.cfg.layout='full';d.cfg.autoHeight=true;d.cfg.naturalSplit=true;const g0=geometry(d);d.tr.before.rotation=90;const g1=geometry(d);return g0.H!==g1.H&&g1.before.w>g0.before.w;}'''))
+ rot=page.evaluate('''async()=>{const d=currentDoc();d.tr.before.rotation=0;const a=await encodeFormat(d,'png');d.tr.before.rotation=90;const b=await encodeFormat(d,'png');return [await blobDataURL(a.blob),await blobDataURL(b.blob)];}''')
+ record('Rotated export differs from unrotated',rot[0]!=rot[1])
+ page.locator('#beforeRot').fill('200');page.locator('#beforeRot').press('Tab');record('Rotation input clamped to 180',page.evaluate('S.tr.before.rotation')==180)
+ page.locator('.rotBtn[data-rotate="before"][data-deg="90"]').click();record('Quick 90° button wraps around',page.evaluate('S.tr.before.rotation')==-90)
+ page.locator('#undoBtn').click();record('Rotation is undoable',page.evaluate('S.tr.before.rotation')==180)
+ page.evaluate('S.tr.before.rotation=0;syncTransformControls();commit();pushHistory();')
  # Restore canonical screenshots/document examples.
  page.evaluate("S.cfg.title='操作示意｜非真實清洗案例';S.cfg.watermarkX=50;S.cfg.watermarkY=97;S.cfg.quality=88;syncControls();commit();pushHistory();")
  # Actual blobs and byte counts, no download required by host restrictions.
@@ -118,6 +126,13 @@ with sync_playwright() as p:
  record('unsafe-eval not allowed in policy', "'unsafe-eval'" not in html)
  record('Fetch blocked by CSP',page.evaluate("async()=>{try{await fetch('https://example.invalid/security-test');return false;}catch(_){return true;}}"))
  record('No ordinary remote subresource requests',not any(u.startswith(('http:','https:')) and 'example.invalid' not in u for u in reqs),reqs[:5])
+ # Single photo removal: list, assignments, batch cases, undo history and toolbox docs all drop the photo.
+ page.evaluate('S.busy=false;');rid=page.evaluate('S.before');page.locator('#casesTab').click();page.locator('#addCase').click();page.locator('#photosTab').click();page.wait_for_timeout(60)
+ page.evaluate('(id)=>{EnToolbox.select(id);}',rid);page.evaluate('(id)=>{const d=EnToolbox.getState().doc;}',rid)
+ n=page.evaluate('S.items.length');page.locator('#files .file').first.locator('button.danger').click();page.wait_for_timeout(120)
+ record('Remove photo drops it from list, assignment and batch',page.evaluate('S.items.length')==n-1 and page.evaluate('S.before')!=rid and page.evaluate('(id)=>!S.cases.some(c=>c.doc.before===id||c.doc.after===id)',rid) and page.evaluate('(id)=>!item(id)',rid))
+ record('Removed photo is scrubbed from undo history',page.evaluate('(id)=>!S.history.concat(S.future).some(h=>h.before===id||h.after===id||h.cases.some(c=>c.doc.before===id||c.doc.after===id))',rid))
+ page.locator('#undoBtn').click();record('Undo cannot resurrect a removed photo',page.evaluate('(id)=>S.before!==id&&S.after!==id',rid))
  page.evaluate('S.busy=false;')
  page.locator('#clearFiles').click();record('Clear resets undo before releasing sources',page.evaluate('S.items.length===0&&S.history.length===1&&S.future.length===0'))
  record('No unhandled JS runtime errors',not errors,errors)
