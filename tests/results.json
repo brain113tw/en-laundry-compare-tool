@@ -3,8 +3,8 @@
   "browser": "153.0.8010.12",
   "environment": "Linux Chromium headless via Playwright; HTML loaded with page.set_content because local navigation is restricted in test environment.",
   "totals": {
-    "checks": 124,
-    "passed": 124
+    "checks": 126,
+    "passed": 126
   },
   "limitations": [
     "No verification of the user Windows installation.",
@@ -170,6 +170,11 @@
         "detail": ""
       },
       {
+        "test": "Cover fit fills the cell at 45° rotation",
+        "passed": true,
+        "detail": ""
+      },
+      {
         "test": "WEBP real encoding / dimensions / bytes",
         "passed": true,
         "detail": "(1600, 900) / 24762"
@@ -242,7 +247,7 @@
       {
         "test": "No ordinary remote subresource requests",
         "passed": true,
-        "detail": "['blob:null/2e3c1fd7-7e93-42f9-9ca0-5e8ff457fc76', 'blob:null/f2a95d15-d2ea-465c-9acf-99fed5a5e474', 'blob:null/ae9648b3-b31a-488e-8835-4724969d7403']"
+        "detail": "['blob:null/53fc861c-d0ee-43e8-8b2d-983388e9922b', 'blob:null/73773271-4077-417d-82da-0507e19eca45', 'blob:null/b64b0b26-c944-4804-bd9c-9f079c4b68f3']"
       },
       {
         "test": "Remove photo drops it from list, assignment and batch",
@@ -250,12 +255,17 @@
         "detail": ""
       },
       {
-        "test": "Removed photo is scrubbed from undo history",
+        "test": "Removal resets the freed side transform",
         "passed": true,
         "detail": ""
       },
       {
-        "test": "Undo cannot resurrect a removed photo",
+        "test": "Undo restores the removed photo with assignment and batch case",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Redo removes it again",
         "passed": true,
         "detail": ""
       },
@@ -557,7 +567,7 @@
         "detail": ""
       },
       {
-        "test": "Toolbox remove button drops the photo and keeps a valid active photo",
+        "test": "Toolbox remove button works from the keyboard and keeps a valid active photo",
         "passed": true,
         "detail": ""
       },
@@ -579,7 +589,7 @@
       {
         "test": "No HTTP/S network requests from editor",
         "passed": true,
-        "detail": "['blob:null/46b32c41-3c4a-4d76-9165-f1bc8e304c90', 'blob:null/75a26bc0-4ef8-4e19-870b-6bf8ba28e744', 'blob:null/2e430145-fe39-45ea-b434-ecaf3ba0a1b2', 'blob:null/4919aa9e-9793-422a-bc78-855d6b0559e9']"
+        "detail": "['blob:null/652e1d51-4495-4f2d-8ff3-450631452dff', 'blob:null/ad57034f-d5c9-4eb5-ba9c-fd2bc8127bf2', 'blob:null/fca1ee53-0170-4d79-b565-0f9fdc520447', 'blob:null/48bca35e-01c5-4c2e-ac7a-a2044f76d4db']"
       }
     ],
     "additional": [
