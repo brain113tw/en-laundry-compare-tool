@@ -1,10 +1,10 @@
 {
   "version": "6.2",
-  "browser": "141.0.7390.37",
+  "browser": "153.0.8010.12",
   "environment": "Linux Chromium headless via Playwright; HTML loaded with page.set_content because local navigation is restricted in test environment.",
   "totals": {
-    "checks": 115,
-    "passed": 115
+    "checks": 126,
+    "passed": 126
   },
   "limitations": [
     "No verification of the user Windows installation.",
@@ -145,6 +145,36 @@
         "detail": "[]"
       },
       {
+        "test": "Rotation changes natural split and auto height",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Rotated export differs from unrotated",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Rotation input clamped to 180",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Quick 90° button wraps around",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Rotation is undoable",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Cover fit fills the cell at 45° rotation",
+        "passed": true,
+        "detail": ""
+      },
+      {
         "test": "WEBP real encoding / dimensions / bytes",
         "passed": true,
         "detail": "(1600, 900) / 24762"
@@ -152,12 +182,12 @@
       {
         "test": "PNG real encoding / dimensions / bytes",
         "passed": true,
-        "detail": "(1600, 900) / 87181"
+        "detail": "(1600, 900) / 87046"
       },
       {
         "test": "SVG real encoding / dimensions / bytes",
         "passed": true,
-        "detail": "(1600, 900) / 116559"
+        "detail": "(1600, 900) / 116379"
       },
       {
         "test": "Guides not exported",
@@ -217,7 +247,27 @@
       {
         "test": "No ordinary remote subresource requests",
         "passed": true,
-        "detail": "['blob:null/45fa03e0-b9e7-4b93-998e-66416334d4e8', 'blob:null/5df03e2a-5a83-4ae1-99f6-e6fea7e30673', 'blob:null/fe60e26c-b88d-4d9e-957c-9a97a23f9ba9']"
+        "detail": "['blob:null/53fc861c-d0ee-43e8-8b2d-983388e9922b', 'blob:null/73773271-4077-417d-82da-0507e19eca45', 'blob:null/b64b0b26-c944-4804-bd9c-9f079c4b68f3']"
+      },
+      {
+        "test": "Remove photo drops it from list, assignment and batch",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Removal resets the freed side transform",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Undo restores the removed photo with assignment and batch case",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Redo removes it again",
+        "passed": true,
+        "detail": ""
       },
       {
         "test": "Clear resets undo before releasing sources",
@@ -474,7 +524,7 @@
       {
         "test": "Batch preserves each photo privacy masks",
         "passed": true,
-        "detail": "[{'source': 'bag-before.png', 'file': 'bag-before.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 8204, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 1, 'annotations': 1, 'warning': ''}, {'source': 'bag-after.png', 'file': 'bag-after.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 5732, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 0, 'annotations': 0, 'warning': ''}]"
+        "detail": "[{'source': 'bag-before.png', 'file': 'bag-before.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 8258, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 1, 'annotations': 1, 'warning': ''}, {'source': 'bag-after.png', 'file': 'bag-after.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 5732, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 0, 'annotations': 0, 'warning': ''}]"
       },
       {
         "test": "Masked batch image has opaque redaction pixels",
@@ -517,6 +567,11 @@
         "detail": ""
       },
       {
+        "test": "Toolbox remove button works from the keyboard and keeps a valid active photo",
+        "passed": true,
+        "detail": ""
+      },
+      {
         "test": "No runtime JS errors during workflow",
         "passed": true,
         "detail": "[]"
@@ -534,7 +589,7 @@
       {
         "test": "No HTTP/S network requests from editor",
         "passed": true,
-        "detail": "['blob:null/23030f85-bf1a-455d-8d8a-e17a5b81f221', 'blob:null/6e448ebd-e7ee-4537-9c94-0c79b198fc0c', 'blob:null/d253779f-0d7c-4234-b1de-5a48c84536ef', 'blob:null/3e9afdcf-a63e-4062-ac9c-54c81c9ee23c']"
+        "detail": "['blob:null/652e1d51-4495-4f2d-8ff3-450631452dff', 'blob:null/ad57034f-d5c9-4eb5-ba9c-fd2bc8127bf2', 'blob:null/fca1ee53-0170-4d79-b565-0f9fdc520447', 'blob:null/48bca35e-01c5-4c2e-ac7a-a2044f76d4db']"
       }
     ],
     "additional": [
