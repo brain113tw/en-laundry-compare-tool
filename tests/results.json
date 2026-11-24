@@ -3,8 +3,8 @@
   "browser": "153.0.8010.12",
   "environment": "Linux Chromium headless via Playwright; HTML loaded with page.set_content because local navigation is restricted in test environment.",
   "totals": {
-    "checks": 126,
-    "passed": 126
+    "checks": 190,
+    "passed": 190
   },
   "limitations": [
     "No verification of the user Windows installation.",
@@ -247,7 +247,7 @@
       {
         "test": "No ordinary remote subresource requests",
         "passed": true,
-        "detail": "['blob:null/53fc861c-d0ee-43e8-8b2d-983388e9922b', 'blob:null/73773271-4077-417d-82da-0507e19eca45', 'blob:null/b64b0b26-c944-4804-bd9c-9f079c4b68f3']"
+        "detail": "['blob:null/39f72948-e9ea-42f3-8f21-6d98f4d58ab4', 'blob:null/a167864a-fd2f-4fbb-bb80-9f9a507d618f', 'blob:null/5dd8c3b3-1985-494c-abe7-0b6221c82d4f']"
       },
       {
         "test": "Remove photo drops it from list, assignment and batch",
@@ -589,7 +589,7 @@
       {
         "test": "No HTTP/S network requests from editor",
         "passed": true,
-        "detail": "['blob:null/652e1d51-4495-4f2d-8ff3-450631452dff', 'blob:null/ad57034f-d5c9-4eb5-ba9c-fd2bc8127bf2', 'blob:null/fca1ee53-0170-4d79-b565-0f9fdc520447', 'blob:null/48bca35e-01c5-4c2e-ac7a-a2044f76d4db']"
+        "detail": "['blob:null/e4acbd36-1430-4031-857a-4ceeaeb1af65', 'blob:null/40ddd5e9-794a-4087-9211-a70619f33891', 'blob:null/d92ce168-e409-41eb-8e86-1d181545a869', 'blob:null/ee7f878d-55b5-4915-871e-75cd98dd32c9']"
       }
     ],
     "additional": [
@@ -645,6 +645,328 @@
       },
       {
         "test": "No runtime errors in extra cases",
+        "passed": true,
+        "detail": "[]"
+      }
+    ],
+    "features": [
+      {
+        "test": "Starts without script errors",
+        "passed": true,
+        "detail": "[]"
+      },
+      {
+        "test": "Desktop file dialogs list HEIC",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "HEIC signature accepted for a real HEIC file",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "AVIF container is not accepted as HEIC",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "HEIC either decodes natively or is skipped with specific guidance",
+        "passed": true,
+        "detail": "已加入 0 張，略過 1 張。請確認洗前 / 洗後順序。 其中 1 張 HEIC 此瀏覽器無法解碼：請改用 Safari 開啟本工具，或先轉成 JPG（iPhone「設定 → 相機 → 格式」選「最相容」）。"
+      },
+      {
+        "test": "JPEG renamed to .heic is rejected by signature, not blamed on the browser",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Second finger turns a photo drag into a pinch",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Pinch out enlarges the photo in proportion to finger distance",
+        "passed": true,
+        "detail": "299.99989827479135"
+      },
+      {
+        "test": "Symmetric pinch keeps the photo centred under the fingers",
+        "passed": true,
+        "detail": "[-4.718602649426882e-06, 0]"
+      },
+      {
+        "test": "The other photo is untouched by a pinch",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Lifting one finger ends the gesture and records one undo step",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "The remaining finger does not jerk the photo",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Pinch in shrinks and stops at the 20% limit",
+        "passed": true,
+        "detail": "20"
+      },
+      {
+        "test": "Pinch is undoable",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Single finger still pans the photo",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "A second finger while dragging a label does not zoom",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Mouse drag still works after touch gestures",
+        "passed": true,
+        "detail": "[]"
+      },
+      {
+        "test": "Leaving with unexported edits asks for confirmation",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "A simple comparison is considered done once exported",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Batch setup stays protected after an export until a project is saved",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Toolbox save button produces a project and reports it in the toolbox footer",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Toolbox controls are usable again after saving",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Project is a valid stored ZIP with intact CRCs",
+        "passed": true,
+        "detail": "['project.json', 'photos/0001.png', 'photos/0002.png', 'photos/0003.png', 'logo/logo.png']"
+      },
+      {
+        "test": "Project holds project.json, every photo and the logo",
+        "passed": true,
+        "detail": "['project.json', 'photos/0001.png', 'photos/0002.png', 'photos/0003.png', 'logo/logo.png']"
+      },
+      {
+        "test": "Photo bytes are stored unmodified",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "project.json is typed, versioned and free of session ids",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Saving a project clears the unsaved-work guard",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Declining the replace prompt keeps the current session",
+        "passed": true,
+        "detail": "已取消開啟專案檔，目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Reopened project restores photos, settings, positions, batch and toolbox edits exactly",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Reopened project gets fresh session ids and a clean history",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Reopened comparison renders pixel-identical output",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Reopened toolbox photo renders pixel-identical output (crop, masks, marks, logo)",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Reopened project starts without unsaved work",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Toolbox list shows restored edits and ticks",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Saving the reopened project reproduces the same project data",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "A project re-written by another ZIP tool (stored) still opens",
+        "passed": true,
+        "detail": "已開啟專案檔：3 張照片、2 組批次。請確認洗前 / 洗後與各組設定。"
+      },
+      {
+        "test": "Rejected, session unchanged: photo bytes altered (CRC mismatch)",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔內的 photos/0002.png 已損毀（CRC 不符）。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: re-compressed with deflate",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔已被其他軟體重新壓縮或加密，無法讀取；請使用「儲存專案檔」產生的原始檔。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: truncated file",
+        "passed": true,
+        "detail": "無法開啟專案檔：這不是有效的專案檔（找不到 ZIP 結尾紀錄）。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: not a ZIP at all",
+        "passed": true,
+        "detail": "無法開啟專案檔：這不是有效的專案檔（找不到 ZIP 結尾紀錄）。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: missing photo entry",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔缺少照片：demo_third.png 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: missing project.json",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔缺少 project.json。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: wrong type",
+        "passed": true,
+        "detail": "無法開啟專案檔：這不是對比圖專案檔。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: future version",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔版本不支援；請用產生它的工具版本開啟。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: prototype key",
+        "passed": true,
+        "detail": "無法開啟專案檔：JSON 含有禁止的屬性名稱。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: reference to an unknown photo",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔引用了不存在的照片。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: photo renamed to .html",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔含有不支援的照片類型。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: photo ids out of order",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔的照片編號不正確。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: non-numeric setting",
+        "passed": true,
+        "detail": "無法開啟專案檔：quality 必須是有限數字。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: non-finite position",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔的照片位置數值不正確。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: over-limit canvas",
+        "passed": true,
+        "detail": "無法開啟專案檔：設定的輸出總像素超過 2000 萬，未套用。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: unknown mask type",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔的遮蔽類型不正確。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: too many masks",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔的遮蔽資料不正確。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: marker colour that is not a colour",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔的標記類型或顏色不正確。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: toolbox edits for an unknown photo",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔的每張編輯資料不正確。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: invalid UTF-8 in project.json",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔的設定資料不是有效的 UTF-8。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: deeply nested JSON",
+        "passed": true,
+        "detail": "無法開啟專案檔：JSON 結構過大或巢狀過深。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: directory size larger than the file",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔的目錄不正確。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "No prototype pollution after hostile files",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Out-of-range values are clamped and unknown fields dropped",
+        "passed": true,
+        "detail": "已開啟專案檔：3 張照片、2 組批次。請確認洗前 / 洗後與各組設定。"
+      },
+      {
+        "test": "A photo that cannot be decoded is skipped and its references dropped",
+        "passed": true,
+        "detail": "已開啟專案檔：2 張照片、1 組批次。有 1 張照片無法載入，相關設定已略過（詳見操作紀錄）。"
+      },
+      {
+        "test": "Saving refuses a state it could not read back",
+        "passed": true,
+        "detail": "無法儲存專案檔：設定的輸出總像素超過 2000 萬，未套用。"
+      },
+      {
+        "test": "Saving with no photos explains instead of producing an empty file",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "No runtime JS errors during the whole run",
         "passed": true,
         "detail": "[]"
       }
