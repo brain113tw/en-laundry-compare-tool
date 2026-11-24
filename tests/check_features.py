@@ -112,9 +112,14 @@ with sync_playwright() as p:
     context = browser.new_context(viewport={'width': 1440, 'height': 1000}, has_touch=True)
     page = context.new_page()
     errors = []
-    answer = {'accept': True}
+    answer = {'accept': True, 'queue': [], 'seen': []}
+
+    def on_dialog(d):
+        answer['seen'].append(d.message)
+        ok = answer['queue'].pop(0) if answer['queue'] else answer['accept']
+        d.accept() if ok else d.dismiss()
     page.on('pageerror', lambda e: errors.append(str(e)))
-    page.on('dialog', lambda d: d.accept() if answer['accept'] else d.dismiss())
+    page.on('dialog', on_dialog)
     page.set_content(html)
     page.wait_for_timeout(100)
     page.evaluate("window.__dl = []; window.download = (blob, name) => { window.__dl.push({blob, name}); };")
@@ -163,11 +168,22 @@ with sync_playwright() as p:
     record('Pinch out enlarges the photo in proportion to finger distance', abs(scale - 300) < 6, scale)
     record('Symmetric pinch keeps the photo centred under the fingers', page.evaluate('Math.abs(S.tr.before.x) < 1.5 && Math.abs(S.tr.before.y) < 1.5'), page.evaluate('[S.tr.before.x, S.tr.before.y]'))
     record('The other photo is untouched by a pinch', page.evaluate('S.tr.after.scale === 100 && S.tr.after.x === 0'))
-    touch('touchEnd', [(0, (c['x'] - 90, c['y']))])
-    record('Lifting one finger ends the gesture and records one undo step', page.evaluate('S.drag === null') and page.evaluate('S.history.length') == hist0 + 1)
-    touch('touchMove', [(0, (c['x'] - 150, c['y'] + 40))])
-    record('The remaining finger does not jerk the photo', page.evaluate('S.tr.before.scale') == scale and page.evaluate('Math.abs(S.tr.before.x) < 1.5'))
+    # In CDP a touchEnd lists the fingers that lift; the others stay down.
+    touch('touchEnd', [(1, (c['x'] + 90, c['y']))])
+    record('Lifting one finger hands over to a single-finger pan, with no undo step yet',
+           page.evaluate("!!S.drag && !S.drag.kind && S.drag.side === 'before'") and page.evaluate('S.history.length') == hist0 and page.evaluate('S.tr.before.scale') == scale)
+    x_hand = page.evaluate('S.tr.before.x')
+    expect = page.evaluate('30 * geom.W / overlay.getBoundingClientRect().width / geom.before.w * 100')
+    touch('touchMove', [(0, (c['x'] - 60, c['y']))])
+    moved = page.evaluate('S.tr.before.x') - x_hand
+    record('The finger that stays down pans from where it is, without a jump', abs(moved - expect) < 0.6 and page.evaluate('S.tr.before.scale') == scale, (moved, expect))
+    touch('touchStart', [(0, (c['x'] - 60, c['y'])), (1, (c['x'] + 60, c['y']))])
+    record('A returning second finger resumes the pinch', page.evaluate("!!S.drag && S.drag.kind === 'pinch'"))
+    touch('touchMove', [(0, (c['x'] - 60, c['y'])), (1, (c['x'] + 40, c['y']))])
+    record('The resumed pinch zooms instead of sliding the photo', page.evaluate('S.tr.before.scale') < scale - 20, page.evaluate('S.tr.before.scale'))
     touch('touchEnd', [])
+    scale = page.evaluate('S.tr.before.scale')
+    record('The whole multi-finger gesture is one undo step', page.evaluate('S.drag === null') and page.evaluate('S.history.length') == hist0 + 1)
     touch('touchStart', [(0, (c['x'] - 60, c['y']))])
     touch('touchStart', [(0, (c['x'] - 60, c['y'])), (1, (c['x'] + 60, c['y']))])
     for step in range(1, 30):
@@ -191,20 +207,69 @@ with sync_playwright() as p:
     bb = page.locator('#overlay').bounding_box()
     page.mouse.move(c['x'], c['y']); page.mouse.down(); page.mouse.move(c['x'] + 25, c['y'] + 10, steps=4); page.mouse.up()
     record('Mouse drag still works after touch gestures', page.evaluate('S.drag === null') and not errors, errors)
+    ax = page.evaluate("(() => { const r = overlay.getBoundingClientRect(), b = geom.after; return {x: r.x + (b.x + b.w / 2) / geom.W * r.width, y: r.y + (b.y + b.h / 2) / geom.H * r.height, k: geom.W / r.width / b.w * 100}; })()")
+    x0 = page.evaluate('S.tr.after.x')
+    page.mouse.move(ax['x'], ax['y']); page.mouse.down(); page.mouse.move(ax['x'] + 25, ax['y'], steps=3)
+    page.mouse.down(button='right'); page.mouse.up(button='right')
+    page.mouse.move(ax['x'] + 80, ax['y'], steps=4); page.mouse.up()
+    moved = page.evaluate('S.tr.after.x') - x0
+    record('A right-click during a left-button drag does not cut the drag short', abs(moved - 80 * ax['k']) < 0.8 and page.evaluate('S.drag === null'), (moved, 80 * ax['k']))
     page.evaluate("S.tr = {before: freshTransform(), after: freshTransform()}; syncTransformControls(); commit(); pushHistory();")
 
     # ------------------------------------------------------------------ unsaved-work guard
     def leave_blocked():
         return page.evaluate("(() => { const ev = new Event('beforeunload', {cancelable: true}); window.dispatchEvent(ev); return ev.defaultPrevented; })()")
 
+    def dl():
+        return page.evaluate('window.__dl.length')
+
+    def click_and_download(selector):
+        n = dl()
+        page.locator(selector).click()
+        wait_for(page, '() => !S.busy && !EnToolbox.getState().busy && window.__dl.length >= %d' % (n + 1))
+        page.wait_for_timeout(60)
+
+    record('Photos that were only added do not raise the leave prompt', not leave_blocked())
+    page.evaluate("S.tr.before.x = 7; syncTransformControls(); commit(); pushHistory();")
     record('Leaving with unexported edits asks for confirmation', leave_blocked())
-    page.locator('.export[data-format="png"]').click()
-    wait_for(page, '() => !S.busy && window.__dl.length >= 1')
+    click_and_download('.export[data-format="png"]')
     record('A simple comparison is considered done once exported', not leave_blocked())
-    page.locator('#casesTab').click(); page.locator('#addCase').click(); page.wait_for_timeout(80); page.locator('#photosTab').click()
-    page.locator('.export[data-format="png"]').click()
-    wait_for(page, '() => !S.busy && window.__dl.length >= 2')
-    record('Batch setup stays protected after an export until a project is saved', leave_blocked())
+    # toolbox edits are tracked photo by photo, and separately from the comparison
+    two = page.evaluate('S.items.map(i => i.id)')
+    page.locator('#toolboxOpen').click(); page.wait_for_timeout(120)
+    page.evaluate('id => EnToolbox.select(id)', two[1]); page.locator('[data-tb-tab="rotate"]').click(); page.locator('#tbRotateRight').click(); page.wait_for_timeout(60)
+    record('A toolbox setting without crop or masks is unsaved work too', leave_blocked())
+    page.locator('#tbBack').click(); page.wait_for_timeout(80)
+    page.evaluate("S.tr.after.y = 5; syncTransformControls(); commit(); pushHistory();")
+    page.locator('#toolboxOpen').click(); page.wait_for_timeout(120)
+    click_and_download('#tbExport')
+    record('Exporting a toolbox photo does not cover an unexported comparison', leave_blocked())
+    page.locator('#tbBack').click(); page.wait_for_timeout(80)
+    click_and_download('.export[data-format="png"]')
+    record('With the comparison exported as well, nothing is unsaved', not leave_blocked())
+    page.locator('#toolboxOpen').click(); page.wait_for_timeout(120)
+    page.evaluate('id => EnToolbox.select(id)', two[0]); page.locator('#tbRotateRight').click()
+    page.evaluate('id => EnToolbox.select(id)', two[1]); page.locator('#tbRotateRight').click(); page.wait_for_timeout(60)
+    click_and_download('#tbExport')
+    record('Exporting one toolbox photo does not cover edits on another', leave_blocked())
+    page.evaluate('id => EnToolbox.select(id)', two[0]); page.wait_for_timeout(60)
+    click_and_download('#tbExport')
+    record('Each toolbox photo is done once it was exported itself', not leave_blocked())
+    page.locator('#tbBack').click(); page.wait_for_timeout(80)
+    # batch cases are tracked case by case
+    page.locator('#casesTab').click(); page.locator('#addCase').click(); page.wait_for_timeout(80)
+    record('A new batch case is unsaved work', leave_blocked())
+    click_and_download('#batchExport')
+    record('Batch cases are done once a ZIP containing them was downloaded', not leave_blocked())
+    page.locator('#cases .case button.small').first.click(); page.wait_for_timeout(80)
+    record('Opening a batch case for preview is not unsaved work', page.evaluate('!!S.activeCase') and not leave_blocked())
+    page.evaluate("S.tr.before.x = 11; syncTransformControls(); commit(); pushHistory();")
+    record('Editing inside a batch case raises the prompt again', leave_blocked())
+    click_and_download('.export[data-format="png"]')
+    record('Exporting the open batch case as a single image covers that case', not leave_blocked())
+    page.evaluate("resetSession(); EnToolbox.refresh(); syncControls(); renderFiles(); renderCases(); commit(); pushHistory();")
+    page.locator('#photosTab').click()
+    record('An emptied session has nothing to lose', not leave_blocked())
 
     # ------------------------------------------------------------------ build a rich session, save, reopen
     load(page, ['demo_before.png', 'demo_after.png', 'demo_third.png'])
@@ -307,7 +372,6 @@ with sync_playwright() as p:
     rejected('photo ids out of order', rebuild(project, lambda o: o['photos'][1].update(id='p7')), '照片編號')
     rejected('non-numeric setting', rebuild(project, lambda o: o['compare']['cfg'].update(quality='90')), 'quality')
     rejected('non-finite position', rebuild(project, lambda o: o['compare']['tr']['before'].update(scale='big')), '位置數值')
-    rejected('over-limit canvas', rebuild(project, lambda o: o['compare']['cfg'].update(width=8192, height=8192, autoHeight=False, layout='custom')), '像素')
     rejected('unknown mask type', rebuild(project, lambda o: o['toolbox']['docs']['p1']['masks'][0].update(type='none')), '遮蔽類型')
     rejected('too many masks', rebuild(project, lambda o: o['toolbox']['docs']['p1'].update(masks=o['toolbox']['docs']['p1']['masks'] * 21)), '遮蔽資料')
     rejected('marker colour that is not a colour', rebuild(project, lambda o: o['toolbox']['docs']['p1']['shapes'][0].update(color='url(x)')), '標記')
@@ -318,7 +382,66 @@ with sync_playwright() as p:
     eocd = huge.rfind(b'PK\x05\x06')
     struct.pack_into('<I', huge, eocd + 12, 0x7fffffff)
     rejected('directory size larger than the file', bytes(huge), '目錄')
+    def patch_entries(data, replace):
+        """Re-write a project, replacing the bytes of the named entries."""
+        src = zipfile.ZipFile(io.BytesIO(data)); out = io.BytesIO()
+        with zipfile.ZipFile(out, 'w', zipfile.ZIP_STORED) as zz:
+            for i in src.infolist():
+                zz.writestr(zipfile.ZipInfo(i.filename), replace.get(i.filename, src.read(i.filename)))
+        return out.getvalue()
+
+    junk = b'not an image at all' * 10
+    rejected('no photo can be shown, so nothing is replaced', patch_entries(project, {'photos/000%d.png' % n: junk for n in (1, 2, 3)}), '都無法載入')
+
+    def twins(o):
+        o['photos'][1].update(name=o['photos'][0]['name'], path=o['photos'][0]['path'], lastModified=o['photos'][0]['lastModified'])
+    rejected('two photos that share path, size and date', patch_entries(rebuild(project, twins), {'photos/0002.png': z.read('photos/0001.png')}), '重複的照片')
+
+    def overlap(data):
+        """Point the directory record of photo 2 at the bytes of photo 1."""
+        zz = zipfile.ZipFile(io.BytesIO(data)); one = zz.getinfo('photos/0001.png'); raw = bytearray(data); o = zz.start_dir
+        while raw[o:o + 4] == b'PK\x01\x02':
+            n, e, c = struct.unpack_from('<HHH', raw, o + 28)
+            if raw[o + 46:o + 46 + n] == b'photos/0002.png':
+                struct.pack_into('<III', raw, o + 16, one.CRC, one.file_size, one.file_size); struct.pack_into('<I', raw, o + 42, one.header_offset)
+            o += 46 + n + e + c
+        return bytes(raw)
+    rejected('two entries that share the same bytes', overlap(project), '重疊')
+
+    def heic_project(data, count):
+        """The same project with its first `count` photos stored as HEIC (as a project saved in Safari would have them)."""
+        src = zipfile.ZipFile(io.BytesIO(data)); meta = json.loads(src.read('project.json')); out = io.BytesIO()
+        for n in range(count):
+            meta['photos'][n].update(name='p%d.heic' % n, path='p%d.heic' % n)
+        with zipfile.ZipFile(out, 'w', zipfile.ZIP_STORED) as zz:
+            zz.writestr(zipfile.ZipInfo('project.json'), json.dumps(meta, ensure_ascii=False).encode())
+            for n, ph in enumerate(meta['photos']):
+                heic = ph['name'].endswith('.heic')
+                zz.writestr(zipfile.ZipInfo('photos/%04d.%s' % (n + 1, 'heic' if heic else 'png')), heic_fixture.read_bytes() if heic else src.read('photos/%04d.png' % (n + 1)))
+            zz.writestr(zipfile.ZipInfo('logo/logo.png'), src.read('logo/logo.png'))
+        return out.getvalue()
+    if not native:
+        rejected('every photo is HEIC and this browser cannot decode HEIC', heic_project(project, 3), 'Safari 17')
     record('No prototype pollution after hostile files', page.evaluate('({}).polluted === undefined && window.bad === undefined'))
+
+    # a size the user still has to correct is restored as it was; the limit is enforced when drawing, not when reading
+    open_bytes(page, rebuild(project, lambda o: o['compare']['cfg'].update(width=8192, height=8192, autoHeight=False, layout='custom')))
+    record('An over-limit canvas in a project opens as saved and is refused when drawn',
+           page.evaluate("S.items.length === 3 && S.cfg.width === 8192 && (() => { try { geometry(currentDoc()); return false; } catch (e) { return true; } })()")
+           and '開啟專案檔：' in page.locator('#log').text_content().splitlines()[-1] + page.locator('#log').text_content().splitlines()[-2] and '超出限制' in status(page), status(page))
+    if not native:
+        open_bytes(page, heic_project(project, 1))
+        record('A project with some HEIC photos opens the rest and says why', page.evaluate('S.items.length') == 2 and is_error(page) and 'HEIC' in status(page) and 'Safari 17' in status(page), status(page))
+
+    def lone(o):
+        o['compare']['cfg']['title'] = '案例\ud800A'
+        o['compare']['cases'][0]['name'] = 'case\udc00'
+        return json.dumps(o).encode()
+    open_bytes(page, rebuild(project, lone))
+    record('Unpaired surrogates in project text are replaced, so every name can be written to a file again',
+           page.evaluate("S.cfg.title === '案例\\uFFFDA' && S.cases.every(c => c.name.isWellFormed())"), page.evaluate('JSON.stringify([S.cfg.title, S.cases.map(c => c.name)])'))
+    open_bytes(page, rebuild(project, drop='logo/logo.png'))
+    record('A recorded logo that cannot be restored is reported', is_error(page) and 'Logo 無法還原' in status(page) and page.evaluate('S.items.length') == 3 and page.evaluate('EnToolbox.projectLogo()') is None, status(page))
 
     # values that are merely out of range are clamped, and unknown fields are dropped
     def soften(o):
@@ -338,21 +461,65 @@ with sync_playwright() as p:
             for i in src.infolist():
                 zz.writestr(zipfile.ZipInfo(i.filename), b'not an image at all' * 10 if i.filename == 'photos/0001.png' else src.read(i.filename))
         return out.getvalue()
+    open_bytes(page, project)
+    whole = snapshot(page)
+    answer['queue'] = [True, False]; answer['seen'].clear()
+    open_bytes(page, junk_photo(project))
+    record('Declining after hearing that a photo cannot be loaded keeps the session', snapshot(page) == whole and '已取消' in status(page) and len(answer['seen']) == 2 and '有 1 張無法載入' in answer['seen'][1], answer['seen'])
+    answer['queue'] = []
     n_err = len(errors)
     open_bytes(page, junk_photo(project))
     record('A photo that cannot be decoded is skipped and its references dropped', page.evaluate('''() => S.items.length === 2 && S.before === null && S.tr.before.scale === 100 && S.tr.before.rotation === 0
         && S.cases.every(c => item(c.doc.before) && item(c.doc.after)) && !!item(EnToolbox.getState().active)''') and '無法載入' in status(page) and len(errors) == n_err, status(page))
 
-    # an over-limit canvas cannot be written into a project that would then refuse to open
+    # a size the user still has to correct must not block saving the rest of the work
     open_bytes(page, project)
-    n_dl = page.evaluate('window.__dl.length')
+    n_dl = dl()
     page.evaluate("S.cfg.layout = 'custom'; S.cfg.autoHeight = false; S.cfg.width = 8192; S.cfg.height = 8192; syncControls(); commit();")
     page.locator('#saveProject').click()
-    wait_for(page, '() => !S.busy')
-    record('Saving refuses a state it could not read back', page.evaluate('window.__dl.length') == n_dl and '無法儲存專案檔' in status(page) and is_error(page) and page.locator('#saveProject').is_enabled(), status(page))
+    wait_for(page, '() => !S.busy && window.__dl.length >= %d' % (n_dl + 1))
+    record('A session with an over-limit canvas can still be saved', '專案檔已交給瀏覽器下載' in status(page) and not is_error(page) and page.locator('#saveProject').is_enabled(), status(page))
+    open_bytes(page, saved_bytes(page))
+    record('It reopens with the same size still to be corrected', page.evaluate('S.cfg.width === 8192 && S.cfg.height === 8192 && S.items.length === 3'), status(page))
+
+    # a source file that can no longer be read is named
+    open_bytes(page, project)
+    n_dl = dl()
+    page.evaluate('''() => { const f = S.items[1].file; S.items[1].file = new Proxy(f, {get(t, k) { if (k === 'arrayBuffer') return () => Promise.reject(new DOMException('gone', 'NotReadableError'));
+        const v = t[k]; return typeof v === 'function' ? v.bind(t) : v; }}); }''')
+    page.locator('#saveProject').click()
+    wait_for(page, '() => !S.busy'); page.wait_for_timeout(80)
+    record('A photo whose file can no longer be read is named in the save error', dl() == n_dl and is_error(page) and '照片「demo_after.png」' in status(page) and page.locator('#saveProject').is_enabled(), status(page))
+
+    # a logo with a long file name, stale fields of the replaced session, locking while loading, dropping a project file
+    open_bytes(page, project)
+    page.locator('#tbLogoInput').set_input_files({'name': 'L' * 150 + '.png', 'mimeType': 'image/png', 'buffer': (work / 'logo.png').read_bytes()})
+    wait_for(page, "() => document.querySelector('#tbLogoName').textContent.startsWith('LLL')")
+    n_dl = dl()
+    page.locator('#saveProject').click()
+    wait_for(page, '() => !S.busy && window.__dl.length >= %d' % (n_dl + 1))
+    open_bytes(page, saved_bytes(page))
+    record('A logo with a very long file name survives save and reopen', page.evaluate("!!EnToolbox.projectLogo() && EnToolbox.projectLogo().name.endsWith('.png')") and not is_error(page), status(page))
+    page.locator('#filename').fill('舊檔名'); page.locator('#searchFiles').fill('zzz')
+    page.evaluate("document.querySelector('#tbSearch').value = 'zzz'; document.querySelector('#tbBatchPrefix').value = '舊前綴';")
+    page.evaluate("window.__lock = []; window.__decode = decodeEntries; decodeEntries = async (...a) => { window.__lock.push(S.busy && EnToolbox.getState().busy && [...document.querySelectorAll('#saveProject,#openProject,#clearFiles,.export')].every(b => b.disabled)); return window.__decode(...a); }; void 0;")
+    open_bytes(page, project)
+    page.evaluate('decodeEntries = window.__decode; void 0;')
+    record('The workspace stays locked while a project loads', page.evaluate('window.__lock.length === 1 && window.__lock[0] === true'), page.evaluate('window.__lock'))
+    record('Opening a project clears the previous output name, search filters and batch prefix',
+           page.evaluate("['filename', 'searchFiles', 'tbSearch', 'tbBatchPrefix'].every(id => document.getElementById(id).value === '')") and page.locator('#files .file').count() == 3)
+    record('A reopened project is not unsaved work, and previewing one of its cases does not change that',
+           (not leave_blocked(), page.locator('#casesTab').click(), page.locator('#cases .case button.small').first.click(), page.wait_for_timeout(80), page.evaluate('!!S.activeCase') and not leave_blocked(), page.locator('#photosTab').click())[4])
+    page.evaluate("status('x')")
+    page.evaluate('''b64 => { const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0)), dt = new DataTransfer(); dt.items.add(new File([bytes], 'dropped.enproj'));
+        document.querySelector('#files').dispatchEvent(new DragEvent('drop', {bubbles: true, cancelable: true, dataTransfer: dt})); }''', base64.b64encode(project).decode())
+    wait_for(page, "() => !S.busy && !S.importing && document.querySelector('#status').textContent.includes('已開啟專案檔')")
+    page.wait_for_timeout(150)
+    record('A single project file dropped on the photo list is opened', snapshot(page) == before_state, status(page))
     page.evaluate("resetSession(); EnToolbox.refresh(); syncControls(); renderFiles(); renderCases(); commit(); pushHistory();")
+    n_dl = dl()
     page.locator('#saveProject').click(); page.wait_for_timeout(100)
-    record('Saving with no photos explains instead of producing an empty file', page.evaluate('window.__dl.length') == n_dl and '沒有照片可儲存' in status(page))
+    record('Saving with no photos explains instead of producing an empty file', dl() == n_dl and '沒有照片可儲存' in status(page))
     record('No runtime JS errors during the whole run', not errors, errors)
     (work / 'test-results.json').write_text(json.dumps({'browser': browser.version, 'results': results, 'pageErrors': errors}, ensure_ascii=False, indent=2), encoding='utf-8')
     browser.close()

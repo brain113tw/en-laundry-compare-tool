@@ -205,7 +205,7 @@
     {
       "test": "No ordinary remote subresource requests",
       "passed": true,
-      "detail": "['blob:null/0dd46cc9-208c-438c-a2d3-519c2410c359', 'blob:null/42ce4333-c118-4b7d-b106-b490acfb7698', 'blob:null/a64ca63c-0eed-4655-8111-a12434038a0c']"
+      "detail": "['blob:null/85038934-0843-4586-87d6-2d14c9de9fca', 'blob:null/d47f27ae-4ed6-4581-956e-fd79a10b5b87', 'blob:null/9eac532f-a0fb-4917-8aa8-3b76d9722764']"
     },
     {
       "test": "Clear resets undo before releasing sources",

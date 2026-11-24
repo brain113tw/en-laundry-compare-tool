@@ -3,8 +3,8 @@
   "browser": "153.0.8010.12",
   "environment": "Linux Chromium headless via Playwright; HTML loaded with page.set_content because local navigation is restricted in test environment.",
   "totals": {
-    "checks": 190,
-    "passed": 190
+    "checks": 294,
+    "passed": 294
   },
   "limitations": [
     "No verification of the user Windows installation.",
@@ -247,7 +247,7 @@
       {
         "test": "No ordinary remote subresource requests",
         "passed": true,
-        "detail": "['blob:null/39f72948-e9ea-42f3-8f21-6d98f4d58ab4', 'blob:null/a167864a-fd2f-4fbb-bb80-9f9a507d618f', 'blob:null/5dd8c3b3-1985-494c-abe7-0b6221c82d4f']"
+        "detail": "['blob:null/1e6b9c23-65fa-4251-8ab0-d1dd672ddcd5', 'blob:null/0a69fab6-895a-47d8-b548-12a13e50df34', 'blob:null/6865b1ab-61a2-4803-8aa8-7480eadf7025']"
       },
       {
         "test": "Remove photo drops it from list, assignment and batch",
@@ -271,6 +271,61 @@
       },
       {
         "test": "Clear resets undo before releasing sources",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Files dropped while an import is running are refused with a message",
+        "passed": true,
+        "detail": "正在處理其他工作，請稍後再拖入照片。"
+      },
+      {
+        "test": "Opening the toolbox during an import says why it does not open",
+        "passed": true,
+        "detail": "正在讀取照片，請稍候再開啟圖片工具箱。"
+      },
+      {
+        "test": "Assigning a photo from the keyboard keeps focus on the same button",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Assigning an id that is no longer in the list is ignored",
+        "passed": true,
+        "detail": "[]"
+      },
+      {
+        "test": "Ctrl+Z works while a checkbox has focus",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "The drop highlight goes away by itself when the drag ends without a drop",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "The batch progress bar starts at zero on a second run",
+        "passed": true,
+        "detail": "0%"
+      },
+      {
+        "test": "A removed photo is released when its undo steps are gone",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Names are well-formed text and a length cut does not split a character",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Without WebP encoding the batch format list offers PNG instead",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Clearing the photo list also resets the toolbox",
         "passed": true,
         "detail": ""
       },
@@ -374,7 +429,7 @@
       {
         "test": "Mosaic privacy mask changes the masked region",
         "passed": true,
-        "detail": "17.666666666666668"
+        "detail": "20.554166666666667"
       },
       {
         "test": "Mask strength is defined in source pixels, independent of crop",
@@ -383,6 +438,21 @@
       },
       {
         "test": "Pointer drag moves actual privacy region",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Dragging a mask moves it without selecting it",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Duplicate without a selection explains instead of doing nothing",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Clicking a mask selects it and says so in the panel",
         "passed": true,
         "detail": ""
       },
@@ -524,7 +594,7 @@
       {
         "test": "Batch preserves each photo privacy masks",
         "passed": true,
-        "detail": "[{'source': 'bag-before.png', 'file': 'bag-before.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 8258, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 1, 'annotations': 1, 'warning': ''}, {'source': 'bag-after.png', 'file': 'bag-after.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 5732, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 0, 'annotations': 0, 'warning': ''}]"
+        "detail": "[{'source': 'bag-before.png', 'sourcePath': 'bag-before.png', 'file': 'bag-before.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 8296, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 1, 'annotations': 1, 'warning': ''}, {'source': 'bag-after.png', 'sourcePath': 'bag-after.png', 'file': 'bag-after.webp', 'status': 'ok', 'width': 800, 'height': 600, 'bytes': 5732, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 0, 'annotations': 0, 'warning': ''}]"
       },
       {
         "test": "Masked batch image has opaque redaction pixels",
@@ -587,9 +657,309 @@
         "detail": ""
       },
       {
+        "test": "A drawn mask is not left selected",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Choosing the type for the next mask does not convert the one just drawn",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Clicking a mask loads its own type into the panel",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "With a mask selected the type control edits that mask and says so",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "The list button takes the selection off again",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Delete without a selection explains instead of doing nothing",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "A second finger does not replace the drag or leave a stray mask",
+        "passed": true,
+        "detail": "[{'x': 0.1, 'y': 0.1, 'w': 0.2, 'h': 0.2, 'type': 'mosaic', 'strength': 20}, {'x': 0.5, 'y': 0.5, 'w': 0.2, 'h': 0.2, 'type': 'blur', 'strength': 20}, {'x': 0.75, 'y': 0.15, 'w': 0.0394736842105263, 'h': 0.052631578947368404, 'type': 'mosaic', 'strength': 20}]"
+      },
+      {
+        "test": "A mask added with the button can be selected by a click",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Reopening after the edited photo was undone away resets selection and status",
+        "passed": true,
+        "detail": "目前編輯：bag-before.png。"
+      },
+      {
+        "test": "Redo brings the photo back with its toolbox edits",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "An over-limit size blanks the result preview instead of leaving an older picture",
+        "passed": true,
+        "detail": "輸出 8192 × 8192 超過限制（單邊 8192、總像素 2000 萬）。請縮小尺寸。"
+      },
+      {
+        "test": "The privacy view still shows the source photo while the size is over the limit",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "A mask drawn while the size is over the limit lands where it was drawn and moves no other mask",
+        "passed": true,
+        "detail": "{'x': 0.4, 'y': 0.8, 'w': 0.1, 'h': 0.1, 'type': 'mosaic', 'strength': 20}"
+      },
+      {
+        "test": "Pointer edits are ignored while nothing valid is shown",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Switching to an over-limit photo does not keep showing the previous photo",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Correcting the size restores the preview",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "The size error leaves the footer once the size is valid again",
+        "passed": true,
+        "detail": "輸出尺寸已在限制內。"
+      },
+      {
+        "test": "Typing the text for the next label does not rewrite the previous one",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Dragging a marker moves it without selecting it",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Clicking a marker loads its text into the panel",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Changing only the colour leaves the text and the other marker alone",
+        "passed": true,
+        "detail": "[{'type': 'text', 'dir': 'ne', 'color': '#00aa00', 'text': '污漬', 'x': 0.25, 'y': 0.28, 'w': 0.3, 'h': 0.08}, {'type': 'text', 'dir': 'ne', 'color': '#df5338', 'text': '修復', 'x': 0.25, 'y': 0.5800000535396108, 'w': 0.3, 'h': 0.08}]"
+      },
+      {
+        "test": "A marker colour change is one undo step",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Clicking empty canvas clears the selection",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Ten arrow-key presses on a slider are one undo step",
+        "passed": true,
+        "detail": "10"
+      },
+      {
+        "test": "Ctrl+Z works while a checkbox has focus",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Undo also moves a slider that has focus back",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Escape closes the toolbox while a tick box has focus",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Choosing a photo from the keyboard keeps focus on its row",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "A click with a two-pixel wobble on a large photo leaves no mask",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Dragging inside an uncropped photo does not create a full-frame crop",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "A stray click outside the crop frame keeps the crop",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Switching to the free ratio keeps the crop",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Changing the ratio reshapes the hand-made crop around its centre",
+        "passed": true,
+        "detail": "{'x': 0.05, 'y': 0.20000000000187498, 'w': 0.4, 'h': 0.29999999999625004}"
+      },
+      {
+        "test": "The centre button still gives the centred maximum crop",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "A full-frame result is no crop at all",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "A project crop on the last pixel column stays inside the photo",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Mosaic over a transparent source is opaque and leaves no original pixel",
+        "passed": true,
+        "detail": "{'clear': 0, 'black': 0, 'outside': 0}"
+      },
+      {
+        "test": "On a tall image the weakest mosaic is as coarse in the export as the editor shows it",
+        "passed": true,
+        "detail": "4"
+      },
+      {
+        "test": "A preset stores neither rotation nor control characters in its name",
+        "passed": true,
+        "detail": "AB"
+      },
+      {
+        "test": "Applying a preset keeps the rotation of the photo",
+        "passed": true,
+        "detail": "已套用 AB。這張的旋轉、裁切、遮蔽與標記保留。"
+      },
+      {
+        "test": "The default preset name is the first free one and never overwrites",
+        "passed": true,
+        "detail": "['工具箱版型 1', '工具箱版型 2', '工具箱版型 3']"
+      },
+      {
+        "test": "Presets from before 6.2.1 no longer switch the logo on",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "The stored preset list skips a bad entry instead of dropping every preset",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Same-named photos from different folders get the folder in the name, in library order",
+        "passed": true,
+        "detail": "['caseA_before.png', 'caseB_Before.webp', 'export_report.json']"
+      },
+      {
+        "test": "The report tells same-named sources apart and reports no quality for PNG",
+        "passed": true,
+        "detail": "[{'source': 'before.png', 'sourcePath': 'cases/caseA/before.png', 'file': 'caseA_before.png', 'status': 'ok', 'width': 400, 'height': 300, 'bytes': 3614, 'format': 'png', 'quality': None, 'crop': False, 'privacyRegions': 0, 'annotations': 0, 'warning': ''}, {'source': 'Before.PNG', 'sourcePath': 'cases/caseB/Before.PNG', 'file': 'caseB_Before.webp', 'status': 'ok', 'width': 400, 'height': 300, 'bytes': 766, 'format': 'webp', 'quality': 88, 'crop': False, 'privacyRegions': 0, 'annotations': 0, 'warning': ''}]"
+      },
+      {
+        "test": "A prefix that cleans to nothing adds nothing",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Two warnings on one export are both reported",
+        "passed": true,
+        "detail": "此瀏覽器不支援調色，輸出未套用亮度／對比／飽和度。 未達容量目標；保留尺寸、品質下限 40。 實際 11.5 KB"
+      },
+      {
+        "test": "The batch list shows the real warning text",
+        "passed": true,
+        "detail": "✓ bag-before.jpg · 11.5 KB · 此瀏覽器不支援調色，輸出未套用亮度／對比／飽和度。 未達容量目標；保留尺寸、品質下限 40。"
+      },
+      {
+        "test": "The copy added to the comparison keeps the background the preview shows",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Without WebP encoding new photos default to JPG and the option is disabled",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "A photo still set to WEBP is exported as JPG with a note",
+        "passed": true,
+        "detail": "已交給瀏覽器下載：Before_edited.jpg · 400 × 300 · 1.4 KB；此瀏覽器無法輸出 WEBP，已改用 JPG。"
+      },
+      {
+        "test": "The stop button is in the footer, reachable from any tab during a single export",
+        "passed": true,
+        "detail": "('正在輸出；請等待完成，或按下方的「停止」。', '已取消。')"
+      },
+      {
+        "test": "A stopped batch downloads nothing and its list does not look finished",
+        "passed": true,
+        "detail": "已停止，沒有產生 ZIP。以下是停止前處理過的項目，都沒有下載：\n・ bag-before.jpg · 22.0 KB\n・ flat.jpg · 9.5 KB"
+      },
+      {
+        "test": "Stop pressed right after starting an export cancels it",
+        "passed": true,
+        "detail": "已取消。"
+      },
+      {
+        "test": "Dragging the watermark leaves one-decimal positions",
+        "passed": true,
+        "detail": "(36.3, 40.7)"
+      },
+      {
+        "test": "The drop banner goes away by itself when the drag ends without a drop",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Buttons that cannot act during an import say so",
+        "passed": true,
+        "detail": "('正在讀取照片，請稍候再輸出。', '正在讀取照片，請稍候再儲存專案檔。')"
+      },
+      {
+        "test": "Loading a logo says that it is shown on the current photo only",
+        "passed": true,
+        "detail": "Logo 已載入，並在目前這張顯示。其他照片請各自勾選「顯示 Logo」，或到批次頁把設定套到勾選照片。"
+      },
+      {
+        "test": "A drag that never got its end event does not block the next one",
+        "passed": true,
+        "detail": "[{'x': 0.1999998004979571, 'y': 0.19999999002693525, 'w': 0.4000005985061286, 'h': 0.19999999002693525, 'type': 'mosaic', 'strength': 20}]"
+      },
+      {
+        "test": "No runtime JS errors during the review checks",
+        "passed": true,
+        "detail": "[]"
+      },
+      {
         "test": "No HTTP/S network requests from editor",
         "passed": true,
-        "detail": "['blob:null/e4acbd36-1430-4031-857a-4ceeaeb1af65', 'blob:null/40ddd5e9-794a-4087-9211-a70619f33891', 'blob:null/d92ce168-e409-41eb-8e86-1d181545a869', 'blob:null/ee7f878d-55b5-4915-871e-75cd98dd32c9']"
+        "detail": "['blob:null/92698fbc-d24b-40b8-b68a-7a942a931277', 'blob:null/66ad9abf-6a6e-45a8-91ca-e0cc5b68983b', 'blob:null/a0155fd1-e8a0-457e-a8f8-37d5a5677923', 'blob:null/9d18a094-5db2-4702-825d-68bf62d9a2cd']"
       }
     ],
     "additional": [
@@ -673,7 +1043,7 @@
       {
         "test": "HEIC either decodes natively or is skipped with specific guidance",
         "passed": true,
-        "detail": "已加入 0 張，略過 1 張。請確認洗前 / 洗後順序。 其中 1 張 HEIC 此瀏覽器無法解碼：請改用 Safari 開啟本工具，或先轉成 JPG（iPhone「設定 → 相機 → 格式」選「最相容」）。"
+        "detail": "已加入 0 張，略過 1 張（原因見操作紀錄）。 其中 1 張 HEIC 此瀏覽器無法解碼：請先轉成 JPG 再加入，或改用 Safari 17 以上（Mac／iPhone／iPad）開啟本工具。之後要直接拍成 JPG，可在 iPhone「設定 → 相機 → 格式」選「最相容」。"
       },
       {
         "test": "JPEG renamed to .heic is rejected by signature, not blamed on the browser",
@@ -701,12 +1071,27 @@
         "detail": ""
       },
       {
-        "test": "Lifting one finger ends the gesture and records one undo step",
+        "test": "Lifting one finger hands over to a single-finger pan, with no undo step yet",
         "passed": true,
         "detail": ""
       },
       {
-        "test": "The remaining finger does not jerk the photo",
+        "test": "The finger that stays down pans from where it is, without a jump",
+        "passed": true,
+        "detail": "(7.730962504831849, 7.730962504831853)"
+      },
+      {
+        "test": "A returning second finger resumes the pinch",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "The resumed pinch zooms instead of sliding the photo",
+        "passed": true,
+        "detail": "249.9999279446428"
+      },
+      {
+        "test": "The whole multi-finger gesture is one undo step",
         "passed": true,
         "detail": ""
       },
@@ -736,6 +1121,16 @@
         "detail": "[]"
       },
       {
+        "test": "A right-click during a left-button drag does not cut the drag short",
+        "passed": true,
+        "detail": "(20.61590001288492, 20.615900012884936)"
+      },
+      {
+        "test": "Photos that were only added do not raise the leave prompt",
+        "passed": true,
+        "detail": ""
+      },
+      {
         "test": "Leaving with unexported edits asks for confirmation",
         "passed": true,
         "detail": ""
@@ -746,7 +1141,57 @@
         "detail": ""
       },
       {
-        "test": "Batch setup stays protected after an export until a project is saved",
+        "test": "A toolbox setting without crop or masks is unsaved work too",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Exporting a toolbox photo does not cover an unexported comparison",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "With the comparison exported as well, nothing is unsaved",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Exporting one toolbox photo does not cover edits on another",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Each toolbox photo is done once it was exported itself",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "A new batch case is unsaved work",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Batch cases are done once a ZIP containing them was downloaded",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Opening a batch case for preview is not unsaved work",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Editing inside a batch case raises the prompt again",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Exporting the open batch case as a single image covers that case",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "An emptied session has nothing to lose",
         "passed": true,
         "detail": ""
       },
@@ -901,11 +1346,6 @@
         "detail": "無法開啟專案檔：專案檔的照片位置數值不正確。 目前的照片與編輯沒有變更。"
       },
       {
-        "test": "Rejected, session unchanged: over-limit canvas",
-        "passed": true,
-        "detail": "無法開啟專案檔：設定的輸出總像素超過 2000 萬，未套用。 目前的照片與編輯沒有變更。"
-      },
-      {
         "test": "Rejected, session unchanged: unknown mask type",
         "passed": true,
         "detail": "無法開啟專案檔：專案檔的遮蔽類型不正確。 目前的照片與編輯沒有變更。"
@@ -941,9 +1381,49 @@
         "detail": "無法開啟專案檔：專案檔的目錄不正確。 目前的照片與編輯沒有變更。"
       },
       {
+        "test": "Rejected, session unchanged: no photo can be shown, so nothing is replaced",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔裡的照片在這個瀏覽器都無法載入。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: two photos that share path, size and date",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔內有重複的照片項目：demo_before.png 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: two entries that share the same bytes",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔的項目位置重疊或超出範圍。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: every photo is HEIC and this browser cannot decode HEIC",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔裡的照片在這個瀏覽器都無法載入。其中 3 張是 HEIC，這個瀏覽器無法解碼；請改用 Safari 17 以上開啟這個專案檔。 目前的照片與編輯沒有變更。"
+      },
+      {
         "test": "No prototype pollution after hostile files",
         "passed": true,
         "detail": ""
+      },
+      {
+        "test": "An over-limit canvas in a project opens as saved and is refused when drawn",
+        "passed": true,
+        "detail": "輸出 8192 × 8192 超出限制；單邊 200–8192 px，總像素最多 2000 萬。請調整尺寸。"
+      },
+      {
+        "test": "A project with some HEIC photos opens the rest and says why",
+        "passed": true,
+        "detail": "已開啟專案檔：2 張照片、1 組批次。有 1 張照片無法載入，相關設定已略過（詳見操作紀錄）。其中 1 張是 HEIC，這個瀏覽器無法解碼；請改用 Safari 17 以上開啟這個專案檔。"
+      },
+      {
+        "test": "Unpaired surrogates in project text are replaced, so every name can be written to a file again",
+        "passed": true,
+        "detail": "[\"案例�A\",[\"case�\",\"第二組 _ 測試\"]]"
+      },
+      {
+        "test": "A recorded logo that cannot be restored is reported",
+        "passed": true,
+        "detail": "已開啟專案檔：3 張照片、2 組批次。專案檔記錄的 Logo 無法還原，請到工具箱重新選擇 Logo。"
       },
       {
         "test": "Out-of-range values are clamped and unknown fields dropped",
@@ -951,14 +1431,54 @@
         "detail": "已開啟專案檔：3 張照片、2 組批次。請確認洗前 / 洗後與各組設定。"
       },
       {
+        "test": "Declining after hearing that a photo cannot be loaded keeps the session",
+        "passed": true,
+        "detail": "['開啟專案檔會取代目前分頁的照片、批次與編輯（原始檔案不受影響）。要繼續嗎？', '專案檔的 3 張照片中有 1 張無法載入。仍要取代目前分頁的內容嗎？']"
+      },
+      {
         "test": "A photo that cannot be decoded is skipped and its references dropped",
         "passed": true,
         "detail": "已開啟專案檔：2 張照片、1 組批次。有 1 張照片無法載入，相關設定已略過（詳見操作紀錄）。"
       },
       {
-        "test": "Saving refuses a state it could not read back",
+        "test": "A session with an over-limit canvas can still be saved",
         "passed": true,
-        "detail": "無法儲存專案檔：設定的輸出總像素超過 2000 萬，未套用。"
+        "detail": "專案檔已交給瀏覽器下載：en_project_20261124_1853.enproj，3 張照片，22.3 KB。下次用「開啟專案檔」接續。"
+      },
+      {
+        "test": "It reopens with the same size still to be corrected",
+        "passed": true,
+        "detail": "輸出 8192 × 8192 超出限制；單邊 200–8192 px，總像素最多 2000 萬。請調整尺寸。"
+      },
+      {
+        "test": "A photo whose file can no longer be read is named in the save error",
+        "passed": true,
+        "detail": "照片「demo_after.png」的原始檔已被移動、改名或修改，無法讀取；請把這張移除後重新加入，再儲存。"
+      },
+      {
+        "test": "A logo with a very long file name survives save and reopen",
+        "passed": true,
+        "detail": "已開啟專案檔：3 張照片、2 組批次。請確認洗前 / 洗後與各組設定。"
+      },
+      {
+        "test": "The workspace stays locked while a project loads",
+        "passed": true,
+        "detail": "[True]"
+      },
+      {
+        "test": "Opening a project clears the previous output name, search filters and batch prefix",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "A reopened project is not unsaved work, and previewing one of its cases does not change that",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "A single project file dropped on the photo list is opened",
+        "passed": true,
+        "detail": "已開啟專案檔：3 張照片、2 組批次。請確認洗前 / 洗後與各組設定。"
       },
       {
         "test": "Saving with no photos explains instead of producing an empty file",
