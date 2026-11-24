@@ -95,6 +95,6 @@ GitHub 的私下安全回報、通知、帳號安全、secret scanning 警示／
 
 ## 驗證結論
 
-本次 43 項指定檢查通過，包含 JSON、拖移、三格式編碼、ZIP CRC、文字安全輸出及 CSP 行為；這是限定測試樣本的結果，**不是「沒有漏洞」的保證**。測試採 Linux Chromium 144 headless，使用完整 HTML 的 set_content；Windows file://／線上 Pages、持久儲存、下載落盤與其他瀏覽器尚需實機確認。
+本次 43 項指定檢查通過，包含 JSON、拖移、三格式編碼、ZIP CRC、文字安全輸出及 CSP 行為；這是限定測試樣本的結果，**不是「沒有漏洞」的保證**。v5.9 當時的測試採 Linux Chromium 144 headless（目前版本的測試環境與項數見 [測試紀錄](TEST_RESULTS.md)），使用完整 HTML 的 set_content；Windows file://／線上 Pages、持久儲存、下載落盤與其他瀏覽器尚需實機確認。
 
 詳見 [測試範圍與結果](../tests/RESULTS.md)。
