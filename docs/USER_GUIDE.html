@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'none'; style-src 'unsafe-inline'; img-src 'self'; base-uri 'none'; form-action 'none'"><meta name="referrer" content="no-referrer"><title>沂恩圖片工具 v6.2 使用說明</title><style>body{max-width:980px;margin:32px auto;padding:0 24px;font:15px/1.85 "Segoe UI","Microsoft JhengHei",sans-serif;color:#243c33;background:#f5f8f6}main{padding:32px 42px;background:white;border:1px solid #dbe7df;border-radius:14px}h1{font-size:28px;border-bottom:3px solid #17634c;padding-bottom:16px;color:#164d3c}h2{font-size:20px;margin-top:32px;color:#17634c}h3{font-size:17px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #dbe4de;padding:9px;text-align:left}th{background:#ecf5ef}img{max-width:100%;border:1px solid #dce4df;border-radius:9px}code{background:#eff4f1;padding:2px 5px;font-size:13px}pre{white-space:pre-wrap;padding:14px;background:#eff4f1;border-radius:8px}a{color:#17664c}.no-print{font-size:13px;margin:12px 0}.cap{font-size:12px;color:#718779}@media print{@page{size:A4;margin:17mm}body{background:white;margin:0;padding:0;font-size:11pt;line-height:1.7}main{padding:0;border:0}h1{font-size:23pt}h2{font-size:16pt;break-after:avoid}table,img{break-inside:avoid}a{color:inherit}.no-print{display:none}}</style></head><body><p class="no-print"><a href="../index.html">← 回工具</a>　使用瀏覽器列印（Ctrl+P）可列印本說明。</p><main><h1>沂恩圖片工具 v6.2 使用說明</h1>
 <h2>開啟</h2>
-<p>將 ZIP 解壓縮，使用 Chrome 或 Edge 開 <code>index.html</code>。上方按「圖片工具箱・單張 / 批次」。不需 Python、BAT、後端、帳密或安裝模型。原有對比製作仍在原本工作區。</p>
+<p>將 ZIP 解壓縮，使用 Chrome 或 Edge 開 <code>index.html</code>。上方按「圖片工具箱・單張 / 批次」。不需 Python、BAT、後端、帳密或安裝模型。原有對比製作仍在原本工作區。請保留同一層的 <code>vendor</code> 資料夾，Chrome 與 Edge 要靠它才能開 iPhone 的 HEIC 照片。</p>
 <p>新版工具箱採左側工具列，左邊照片清單、中間預覽、右邊目前工具設定。點「回對比工作區」可返回；兩邊共用照片清單，但各自保留自己的編輯資料。</p>
 <figure><img src="screenshots/toolbox.webp" alt="工具箱操作示意"><figcaption class="cap">合成示意素材；不是客戶照片，也不是清洗成果。</figcaption></figure><h2>快速單張流程</h2>
 <ol><li>按「加入照片」，或把照片拖進工具箱。資料夾可用「加入資料夾」。</li><li>點左側縮圖，成為目前編輯照片。這不代表勾選批次。</li><li>選「尺寸壓縮」，依用途選最長邊、固定畫布、百分比或原尺寸。</li><li>需要轉正時用「旋轉」。需要去掉多餘邊緣時用「裁切」。</li><li>到「浮水印」啟用文字，或選一張 Logo；可在成品上拖曳。</li><li>有個資時到「隱私遮蔽」畫框。文字個資建議實色遮蔽。</li><li>按「看成品」確認構圖與遮蔽，再按「輸出目前單張」。</li></ol>
@@ -51,10 +51,10 @@
 <p>在觸控螢幕上，對比畫布可用單指拖曳移動照片、雙指捏合縮放（以兩指中點為中心，也能邊縮放邊平移）。放開一指後，留在螢幕上的那一指可以繼續拖曳，再放回第二指可以繼續縮放；手指全部離開後才記為一步，可用「上一步」復原。</p>
 <h2>專案檔：保留照片與編輯進度</h2>
 <p>按照片清單下方（工具箱在清單上方）的「儲存專案檔」，瀏覽器會下載一個 <code>.enproj</code> 檔。下次按「開啟專案檔」選它，就能回到同樣的狀態繼續做。</p>
-<p>專案檔包含：原始照片、洗前／洗後指定、畫布與文字設定、每張的位置／縮放／旋轉、批次組合與勾選、工具箱每張照片的通用設定／裁切／遮蔽／標記、批次勾選，以及 Logo。</p>
-<p>不包含：兩種慣用版型（仍存在瀏覽器，請另外匯出 JSON）、上一步／下一步的操作歷史、單張輸出檔名與搜尋欄等畫面狀態。</p>
+<p>專案檔包含：原始照片、洗前／洗後指定、畫布與文字設定、每張的位置／縮放／旋轉、批次組合與勾選、工具箱每張照片的通用設定／裁切／遮蔽／標記、批次勾選、Logo，以及單張輸出檔名、批次輸出格式與工具箱的檔名前綴。HEIC 照片存的是原始檔，不是轉換後的圖。</p>
+<p>不包含：兩種慣用版型（仍存在瀏覽器，請另外匯出 JSON）、上一步／下一步的操作歷史、搜尋欄等畫面狀態。</p>
 <p>開啟專案檔會取代目前分頁的照片與編輯，開啟前會先詢問。工具會先檢查整個檔案（大小、每個項目的 CRC、欄位型別與數值範圍），有任何一項不合格就整份拒絕，目前的內容不會被動到。</p>
-<p>照片也是先解碼、確定能顯示才取代目前內容。全部都無法顯示時（例如在 Chrome 開啟全是 HEIC 的專案）目前的內容原封不動；只有部分無法顯示時，會先說明有幾張，再問是否仍要取代。把單一個 <code>.enproj</code> 檔拖進照片清單也能開啟。開啟後，單張輸出檔名、搜尋欄與批次檔名前綴會清空。</p>
+<p>照片也是先解碼、確定能顯示才取代目前內容。全部都無法顯示時（例如專案裡全是 HEIC，而這台電腦的工具少了 <code>vendor</code> 資料夾）目前的內容原封不動；只有部分無法顯示時，會先說明有幾張，再問是否仍要取代。把單一個 <code>.enproj</code> 檔拖進照片清單也能開啟。開啟後，輸出檔名、批次格式與檔名前綴會換成專案檔裡的內容，搜尋欄會清空。在記憶體較大的電腦存的專案，照片合計可能超過另一台裝置的上限；超出的照片會略過並先詢問。</p>
 <p>專案檔是不壓縮的 ZIP。請不要用其他軟體重新壓縮或加密，否則無法開啟。上限約 288 MiB。輸出尺寸超過限制的設定也會原樣存入，不會因此不能儲存。它內含原始照片，請當成客戶資料保管，不要上傳到公開的 GitHub repo。</p>
 <p>還有沒輸出、也沒存成專案檔的工作時，關閉或重新整理分頁會跳出瀏覽器的確認視窗。每一份工作各自計算：對比圖在輸出後、批次組合在成功輸出 ZIP 後、工具箱的照片在輸出該張（單張或批次）後就視為完成，之後再修改會重新提醒；存成專案檔則全部視為已保存。</p>
 <p>只是加入照片、切換照片、勾選或預覽批次組合不會觸發。這只是提醒，不會替你保存任何資料。</p>
@@ -63,9 +63,16 @@
 <p>在文字、數字輸入欄內，Delete 和方向鍵保留原本的輸入行為，不會誤刪遮蔽框。焦點在勾選框、滑桿、下拉選單或顏色欄時，Ctrl + Z、Ctrl + Y 與 Esc 一樣有效，方向鍵與 Delete 則留給該控制項。連續用鍵盤調同一個滑桿只算一步。</p>
 <h2>保存與限制</h2>
 <p>照片和工作內容只在目前分頁。切換照片會保留各自設定，但關閉或重新整理後不保留。要保留進度請用「儲存專案檔」；慣用版型不是完整專案保存。</p>
-<p>單張輸入上限 50 MiB、6000 萬像素；整批來源上限 256 MiB、合計 1.2 億像素與 256 張。最終輸出單邊上限 8192 px、總像素 2000 萬。設定 JSON 上限 1 MiB。</p>
-<p>支援 JPEG、PNG、WEBP、BMP，GIF 固定載入時一幀。HEIC／HEIF 只有在瀏覽器本身能解碼時才能加入（Safari 17 以上）；Chrome、Edge 目前不能解碼，會略過並提示。iPhone 可在「設定 → 相機 → 格式」選「最相容」直接拍成 JPEG，或在照片的設定把「傳送到 Mac 或 PC」設為「自動」，讓傳到電腦時自動轉檔。TIFF、SVG 等不直接匯入，請先轉換。工具箱沒有 AI 自動去背或網頁轉圖片。瀏覽器無法輸出 WEBP 時（例如 Safari），工具箱預設改用 JPG，對比工作區的批次格式改用 PNG。</p>
-<p>只有故意點選正式網站或 GitHub 連結才會離開工具；圖片編輯流程沒有外部 API、CDN、模型下載或主動網路傳輸。仍需注意瀏覽器擴充套件、電腦本身與自行分享的輸出檔安全。</p>
+<p>單張輸入上限 50 MiB、6000 萬像素；整批來源上限 256 MiB、合計 1.2 億像素與 256 張。記憶體 8 GB 以上的電腦使用 Chrome 或 Edge 時，合計上限是 2.4 億像素，大約 19 張 1200 萬像素或 9 張 2400 萬像素的照片；手機、平板與其他瀏覽器維持 1.2 億。最終輸出單邊上限 8192 px、總像素 2000 萬。設定 JSON 上限 1 MiB。</p>
+<p>支援 JPEG、PNG、WEBP、BMP，GIF 固定載入時一幀，以及 iPhone 的 HEIC／HEIF（見下一節）。TIFF、SVG 等不直接匯入，請先轉換。工具箱沒有 AI 自動去背或網頁轉圖片。瀏覽器無法輸出 WEBP 時（例如 Safari），工具箱預設改用 JPG，對比工作區的批次格式改用 PNG。</p>
+<p>只有故意點選正式網站或 GitHub 連結才會離開工具；圖片編輯流程沒有外部 API、CDN、模型下載或主動網路傳輸。HEIC 解碼元件是隨工具附上的本機檔案，不會連線。仍需注意瀏覽器擴充套件、電腦本身與自行分享的輸出檔安全。</p>
+<h2>iPhone 的 HEIC 照片</h2>
+<p>HEIC 是 iPhone 預設的照片格式。把 <code>.heic</code> 或 <code>.heif</code> 檔和其他照片一樣加入即可，拖放、資料夾、工具箱的「加入照片」與專案檔都適用。</p>
+<p>Safari 17 以上由瀏覽器自己解碼。Chrome、Edge 與其他瀏覽器不會顯示 HEIC，工具會改用隨附的解碼元件：<code>vendor</code> 資料夾裡的 <code>heic-decoder.html</code>。每張約需 1 秒到數秒，畫面下方會顯示「正在解碼 HEIC」的進度。</p>
+<p><code>vendor</code> 資料夾必須和 <code>index.html</code> 放在同一層。只複製單一個 HTML 到別處時，HEIC 會被略過，訊息會請你把資料夾放回去；JPEG、PNG 等其他照片不受影響。這個狀況會記到重新整理頁面為止，放回資料夾後請重新整理。</p>
+<p>直拍的照片會依檔案裡的旋轉資訊轉正。iPhone 的 Display P3 色域會換算成一般螢幕與輸出使用的 sRGB，操作紀錄會註明；其他少見的色彩描述檔不換算，也會註明顏色可能略有差異。帶透明的 HEIC 保留透明。HDR 增益圖、深度圖、原況照片的影片與同一檔案內的其他張不會使用。</p>
+<p>解碼只是讓瀏覽器能顯示這張照片。照片本身仍是原始的 HEIC：清單顯示的是原檔大小，專案檔存的也是原檔。</p>
+<p>解碼元件是第三方軟體 libheif（LGPL-3.0），授權說明在 <code>vendor/THIRD_PARTY_NOTICES.md</code>。它在沙箱框架裡執行，只拿得到正在解碼的那一張照片，沒有網路，也碰不到工具、瀏覽器儲存空間或其他檔案。</p>
 <h2>檔案在哪裡</h2>
 <p>輸出會交給瀏覽器下載，通常在瀏覽器設定的下載位置。按 Chrome / Edge 的下載清單查看；不是 BAT 版原來的 <code>output</code> 資料夾。</p>
 <p>這個 ZIP 內已包含 <code>index.html</code>。要更新 GitHub Pages，請看同資料夾的 <code>DEPLOYMENT.md</code>。不要只把整個 ZIP 上傳，Pages 不會把 ZIP 自動解開當成工具。</p>

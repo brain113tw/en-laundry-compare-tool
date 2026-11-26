@@ -1,5 +1,7 @@
 """Developer regression checks for the project file, pinch zoom, HEIC recognition and unsaved-work guard.
 
+Decoding HEIC with the bundled decoder is covered by tests/check_heic.py, which opens the real files.
+
 Needs Python, Playwright, Pillow and Chromium (set CHROMIUM_EXECUTABLE or have `chromium` on PATH).
 End users never need this; the tool itself is a single HTML file.
 Fixtures are synthetic shapes, never customer photos.
@@ -125,7 +127,8 @@ with sync_playwright() as p:
     page.evaluate("window.__dl = []; window.download = (blob, name) => { window.__dl.push({blob, name}); };")
     record('Starts without script errors', not errors, errors)
 
-    # ------------------------------------------------------------------ HEIC recognition (native decode only)
+    # ------------------------------------------------------------------ HEIC recognition
+    # This page is set from a string and has no address, so the bundled decoder cannot be loaded here: a HEIC either decodes natively or is skipped.
     record('Desktop file dialogs list HEIC', '.heic' in page.locator('#fileInput').get_attribute('accept') and '.heif' in page.locator('#tbInput').get_attribute('accept'))
     record('HEIC signature accepted for a real HEIC file', page.evaluate('''async b64 => { const f = new File([Uint8Array.from(atob(b64), c => c.charCodeAt(0))], 'a.heic');
         try { await verifyImageSignature(f, 'heic'); await verifyImageSignature(f, 'heif'); return true; } catch (e) { return String(e); } }''',
@@ -137,7 +140,7 @@ with sync_playwright() as p:
     page.wait_for_timeout(150)
     native = page.evaluate('S.items.length') == 1
     record('HEIC either decodes natively or is skipped with specific guidance',
-           native or ('HEIC 此瀏覽器無法解碼' in status(page) and 'Safari' in status(page) and is_error(page)), status(page))
+           native or ('HEIC 無法解碼' in status(page) and 'vendor 資料夾' in status(page) and 'Safari' in status(page) and is_error(page) and page.locator('iframe').count() == 0), status(page))
     if native:
         page.evaluate("resetSession(); syncControls(); renderFiles(); renderCases(); commit(); pushHistory();")
     jpeg = io.BytesIO()
@@ -146,7 +149,7 @@ with sync_playwright() as p:
     wait_for(page, '() => !S.importing')
     page.wait_for_timeout(120)
     record('JPEG renamed to .heic is rejected by signature, not blamed on the browser',
-           page.evaluate('S.items.length') == 0 and 'HEIC 此瀏覽器無法解碼' not in status(page) and '檔案內容與副檔名不符' in page.locator('#log').text_content())
+           page.evaluate('S.items.length') == 0 and 'HEIC 無法解碼' not in status(page) and '檔案內容與副檔名不符' in page.locator('#log').text_content())
 
     # ------------------------------------------------------------------ two-finger pinch (real touch input through CDP)
     load(page, ['demo_before.png', 'demo_after.png'])
@@ -508,8 +511,40 @@ with sync_playwright() as p:
     record('The workspace stays locked while a project loads', page.evaluate('window.__lock.length === 1 && window.__lock[0] === true'), page.evaluate('window.__lock'))
     record('Opening a project clears the previous output name, search filters and batch prefix',
            page.evaluate("['filename', 'searchFiles', 'tbSearch', 'tbBatchPrefix'].every(id => document.getElementById(id).value === '')") and page.locator('#files .file').count() == 3)
+    # the output name, the batch format and the toolbox prefix travel with the project
+    page.locator('#filename').fill('案例A_輸出')
+    page.evaluate("document.querySelector('#batchFormat').value = 'png'; document.querySelector('#tbBatchPrefix').value = 'en_case';")
+    n_dl = dl()
+    page.locator('#saveProject').click()
+    wait_for(page, '() => !S.busy && window.__dl.length >= %d' % (n_dl + 1))
+    named_project = saved_bytes(page)
+    page.locator('#filename').fill('別的')
+    page.evaluate("document.querySelector('#batchFormat').value = 'svg'; document.querySelector('#tbBatchPrefix').value = 'other';")
+    open_bytes(page, named_project)
+    naming = lambda: page.evaluate("[document.querySelector('#filename').value, document.querySelector('#batchFormat').value, document.querySelector('#tbBatchPrefix').value]")
+    record('The output name, batch format and file name prefix are saved in the project and restored', naming() == ['案例A_輸出', 'png', 'en_case'] and not is_error(page), naming())
+    open_bytes(page, rebuild(named_project, lambda o: (o['compare'].update(batchFormat='exe', filename='x' * 300 + '\u0007'), o['toolbox'].update(prefix='p' * 90 + '\u0001'))[0]))
+    record('Odd values in those fields are trimmed or replaced by the default', naming() == ['x' * 100, 'webp', 'p' * 40] and not is_error(page), [len(v) for v in naming()])
+    for label, edit in (('the output name is not text', lambda o: o['compare'].update(filename=7)), ('the file name prefix is not text', lambda o: o['toolbox'].update(prefix=['a']))):
+        before_try = naming()
+        open_bytes(page, rebuild(named_project, edit))
+        record('Rejected, session unchanged: ' + label, is_error(page) and '無法開啟專案檔' in status(page) and naming() == before_try, status(page))
+    open_bytes(page, project)
+    record('A project written before these fields existed opens with them empty', naming() == ['', 'webp', ''] and not is_error(page), naming())
     record('A reopened project is not unsaved work, and previewing one of its cases does not change that',
            (not leave_blocked(), page.locator('#casesTab').click(), page.locator('#cases .case button.small').first.click(), page.wait_for_timeout(80), page.evaluate('!!S.activeCase') and not leave_blocked(), page.locator('#photosTab').click())[4])
+    # keyboard focus survives the batch list being redrawn
+    page.locator('#casesTab').click()
+    n_cases = page.locator('#cases .case').count()
+    page.locator('#cases .case').nth(n_cases - 1).locator('button.small').first.focus()
+    page.keyboard.press('Enter'); page.wait_for_timeout(100)
+    record('Previewing a batch item from the keyboard keeps focus on that button',
+           n_cases >= 2 and page.evaluate("document.activeElement.textContent === '預覽 / 調整' && document.activeElement.closest('.case') === [...document.querySelectorAll('#cases .case')].at(-1) && document.activeElement.closest('.case').classList.contains('active')"), n_cases)
+    page.locator('#cases .case').first.locator('button.danger').focus()
+    page.keyboard.press('Enter'); page.wait_for_timeout(100)
+    record('Removing a batch item from the keyboard moves focus to the item that takes its place',
+           page.locator('#cases .case').count() == n_cases - 1 and page.evaluate("document.activeElement.textContent === '移除' && document.activeElement.closest('.case') === document.querySelector('#cases .case')"))
+    page.locator('#photosTab').click()
     page.evaluate("status('x')")
     page.evaluate('''b64 => { const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0)), dt = new DataTransfer(); dt.items.add(new File([bytes], 'dropped.enproj'));
         document.querySelector('#files').dispatchEvent(new DragEvent('drop', {bubbles: true, cancelable: true, dataTransfer: dt})); }''', base64.b64encode(project).decode())
@@ -520,6 +555,25 @@ with sync_playwright() as p:
     n_dl = dl()
     page.locator('#saveProject').click(); page.wait_for_timeout(100)
     record('Saving with no photos explains instead of producing an empty file', dl() == n_dl and '沒有照片可儲存' in status(page))
+    # ------------------------------------------------------------------ total-pixel budget
+    huge = io.BytesIO(); Image.new('P', (9000, 6500), 3).save(huge, 'PNG', compress_level=1)
+    set_device = '''([mem, mobile]) => { Object.defineProperty(navigator, 'deviceMemory', {configurable: true, get: () => mem});
+        Object.defineProperty(navigator, 'userAgentData', {configurable: true, get: () => mobile === null ? undefined : ({mobile})}); return pixelBudget(); }'''
+    budgets = [page.evaluate(set_device, v) for v in ([16, False], [8, False], [4, False], [None, False], [8, True], [8, None])]
+    record('The photo budget is larger only on desktop browsers that report 8 GB of memory or more', budgets == [240000000, 240000000, 120000000, 120000000, 120000000, 120000000], budgets)
+
+    def add_huge(names):
+        page.evaluate("status('…')")
+        page.locator('#fileInput').set_input_files([{'name': n, 'mimeType': 'image/png', 'buffer': huge.getvalue()} for n in names])
+        wait_for(page, "() => !S.importing && document.querySelector('#status').textContent.includes('已加入')", 180)
+    page.evaluate(set_device, [4, False])
+    add_huge(['huge1.png', 'huge2.png', 'huge3.png'])
+    record('Photos beyond the budget are skipped and the reason names the budget', page.evaluate('S.items.map(i => i.file.name)') == ['huge1.png', 'huge2.png']
+           and '略過：huge3.png（已載入照片合計超過 1.2 億像素，請拆批）' in page.locator('#log').text_content(), status(page))
+    page.evaluate(set_device, [8, False])
+    add_huge(['huge3.png'])
+    record('The larger budget accepts the photo the smaller one refused', page.evaluate('S.items.length') == 3 and not is_error(page), status(page))
+    page.evaluate("delete navigator.deviceMemory; delete navigator.userAgentData; resetSession(); EnToolbox.refresh(); syncControls(); renderFiles(); renderCases(); commit(); pushHistory();")
     record('No runtime JS errors during the whole run', not errors, errors)
     (work / 'test-results.json').write_text(json.dumps({'browser': browser.version, 'results': results, 'pageErrors': errors}, ensure_ascii=False, indent=2), encoding='utf-8')
     browser.close()

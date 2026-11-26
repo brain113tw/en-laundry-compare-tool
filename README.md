@@ -12,7 +12,7 @@
 
 解壓縮後，用 Chrome 或 Edge 開 `index.html`。不需要執行 BAT、安裝 Python、架設 localhost 或登入帳號。
 
-開啟後保留原有對比工作區。按頂部 **「圖片工具箱・單張 / 批次」** 進入新的全畫面工具箱。單檔 `en_compare_manager_v6_2_toolbox.html` 與 `index.html` 的程式內容相同；二擇一即可。
+開啟後保留原有對比工作區。按頂部 **「圖片工具箱・單張 / 批次」** 進入新的全畫面工具箱。單檔 `en_compare_manager_v6_2_toolbox.html` 與 `index.html` 的程式內容相同；二擇一即可。要在 Chrome、Edge 加入 iPhone 的 HEIC 照片，`vendor` 資料夾必須和這個 HTML 放在一起；其他功能只需要 HTML 本身。
 
 完整說明：[使用手冊](docs/USER_GUIDE.md) · [可列印 HTML](docs/USER_GUIDE.html) · [更新到 GitHub](docs/DEPLOYMENT.md)
 
@@ -28,7 +28,8 @@
 | 拖曳與控制點 | 裁切框與遮蔽框可移動、拉四角；文字和 Logo 可移動、拉右下角縮放。 |
 | 比例與旋轉 | 不再把任意比例硬拉伸。支援等比最長邊、百分比、固定畫布的完整保留或填滿裁切。90° 旋轉會正確交換長寬。 |
 | 資料處理 | 基於 v5.9 安全補強的比較工具整合，保留 CSP 腳本雜湊、JSON 驗證、檔頭與容量檢查。 |
-| 專案檔 | 「儲存專案檔」把原始照片與全部編輯存成一個 `.enproj` 檔，「開啟專案檔」即可接續：洗前／洗後指定、畫布與文字設定、位置縮放旋轉、批次組合、工具箱每張的裁切／遮蔽／標記、批次勾選與 Logo。開啟時逐項驗證，不合格整份拒絕；照片先解碼成功才會取代目前內容。也可以把單一個 `.enproj` 檔拖進照片清單開啟。 |
+| 專案檔 | 「儲存專案檔」把原始照片與全部編輯存成一個 `.enproj` 檔，「開啟專案檔」即可接續：洗前／洗後指定、畫布與文字設定、位置縮放旋轉、批次組合、工具箱每張的裁切／遮蔽／標記、批次勾選、Logo，以及輸出檔名、批次格式與工具箱的檔名前綴。開啟時逐項驗證，不合格整份拒絕；照片先解碼成功才會取代目前內容。也可以把單一個 `.enproj` 檔拖進照片清單開啟。 |
+| HEIC 照片 | iPhone 的 `.heic`／`.heif` 可以直接加入。Safari 17 以上由瀏覽器解碼；Chrome、Edge 等改用隨附的解碼元件（`vendor` 資料夾），每張約 1 秒到數秒。直拍的照片會轉正，Display P3 的顏色會換算成 sRGB；專案檔保存的仍是原始 HEIC。 |
 | 未儲存提醒 | 還有沒輸出、也沒存成專案檔的工作時，關閉或重新整理分頁會先詢問。每一份工作各自計算：對比圖在輸出後、批次組合在成功輸出 ZIP 後、工具箱的照片在輸出該張後視為完成，之後再修改會重新提醒。只是加入照片、切換照片或勾選不會觸發。 |
 | 觸控 | 對比畫布支援單指拖曳、雙指捏合縮放（以兩指中點為中心）。放開一指後可用留下的那一指繼續拖曳，放回第二指可繼續縮放。 |
 | 對比工作區照片 | 洗前／洗後各自可輸入旋轉角度或按 ↶↷ 轉 90°，版面會依旋轉後的長寬重新配置；照片清單每張可單獨「移除」（不刪原始檔），相關的對比指定與批次組合一併移除；按「上一步」可整張復原，連同工具箱的裁切／遮蔽／標記。 |
@@ -89,13 +90,19 @@ JPG / WEBP 支援品質 40–100 與目標容量。目標為 0 時不做容量�
 
 本工具不會自動儲存。照片、Logo、裁切及遮蔽工作內容在分頁關閉／重新整理後不保留；要保留進度請按「儲存專案檔」。專案檔內含原始照片，請當成客戶資料保管，不要放進公開 repo。
 
-沒有內建 HEIC 解碼器。HEIC／HEIF 只有在瀏覽器本身能解碼時才能加入（Safari 17 以上）；Chrome、Edge 會略過並提示先轉成 JPEG。iPhone 可在「設定 → 相機 → 格式」選「最相容」直接拍成 JPEG，或在照片的設定把「傳送到 Mac 或 PC」設為「自動」，讓傳到電腦時自動轉檔。
+## iPhone 的 HEIC 照片
+
+HEIC／HEIF 在 Safari 17 以上由瀏覽器自己解碼。其他瀏覽器使用隨附的解碼元件 `vendor/heic-decoder.html`，內含未修改的 libheif-js 1.23.5（LGPL-3.0，見 [第三方元件聲明](vendor/THIRD_PARTY_NOTICES.md)）。這是本專案唯一的第三方程式碼，只在加入 HEIC 而瀏覽器無法顯示時才載入，並且關在沙箱框架裡執行：它拿得到的只有那一張照片的位元組，沒有網路，也碰不到工具本身、瀏覽器儲存空間或其他檔案。
+
+只複製單一個 HTML、沒有 `vendor` 資料夾時，HEIC 會被略過並提示把資料夾放回去；其他格式不受影響。解碼後的方向依檔案內的旋轉資訊轉正。Display P3（iPhone 的預設色域）會換算成 sRGB；其他色彩描述檔不換算，操作紀錄會註明。HDR 增益圖、深度圖與同一檔案內的其他張不會使用。
+
+一次載入的照片合計上限是 1.2 億像素；記憶體 8 GB 以上的電腦使用 Chrome 或 Edge 時是 2.4 億像素，大約 19 張 1200 萬像素或 9 張 2400 萬像素的照片。超過時會略過並請你分批。
 
 ## 測試與安全範圍
 
-本次比較工作區、工具箱、追加案例與新功能（專案檔、觸控縮放、HEIC 辨識、未儲存提醒）合計 **294 項限定檢查通過**。包含真實圖片編碼、尺寸與位元組數、ZIP CRC、裁切／旋轉／遮蔽座標、指標拖曳、JSON 驗證與 CSP。
+本次比較工作區、工具箱、追加案例、新功能（專案檔、觸控縮放、未儲存提醒）與 HEIC 解碼合計 **355 項限定檢查通過**。包含真實圖片編碼、尺寸與位元組數、ZIP CRC、裁切／旋轉／遮蔽座標、指標拖曳、JSON 驗證與 CSP，以及 HEIC 解碼後的顏色、方向與沙箱隔離。
 
-測試在 Linux Chromium / Playwright 的 `page.set_content` 中執行。沒有在使用者 Windows 上、原生檔案拖曳、`file://` 導覽、作業系統另存新檔視窗或 GitHub Pages 線上部署逐一驗證；也未完成跨次開啟的瀏覽器持久儲存端到端測試。這不是零漏洞保證或外部安全認證。
+測試在 Linux Chromium / Playwright 執行：多數測試組以 `page.set_content` 載入，HEIC 測試組則實際從本機資料夾（`file://`）與本機網頁伺服器開啟。沒有在使用者的 Windows、Safari、Firefox、實體手機或平板上驗證，也沒有驗證原生檔案拖曳、作業系統另存新檔視窗或 GitHub Pages 線上部署；也未完成跨次開啟的瀏覽器持久儲存端到端測試。這不是零漏洞保證或外部安全認證。
 
 詳見 [測試紀錄](docs/TEST_RESULTS.md)、[測試資料](tests/results.json) 與 [安全回報政策](SECURITY.md)。
 
@@ -103,7 +110,9 @@ JPG / WEBP 支援品質 40–100 與目標容量。目標為 0 時不做容量�
 
 程式採內嵌 JavaScript 雜湊 CSP。修改任一 `<script>` 內容後，需重算雜湊，否則腳本會被拒絕執行。可執行 `python tools/update_csp.py` 更新本版兩個入口；此命令是維護用途，一般使用者不需要 Python。
 
-請勿上傳客戶照片、電話、地址、訂單、API Token、密碼、私鑰或資料庫備份。程式依賴瀏覽器本身的圖片解碼功能，請維持瀏覽器更新。
+`vendor/heic-decoder.html` 由 `node tools/build_heic_decoder.mjs` 產生，內容是未修改的 libheif-js 與 `tools/heic_decoder_glue.js`。修改後者需要重新產生；`node tools/build_heic_decoder.mjs --check` 會核對元件的 SHA-256 與頁面內容。更新 GitHub 時 `vendor` 資料夾要一起上傳。
+
+請勿上傳客戶照片、電話、地址、訂單、API Token、密碼、私鑰或資料庫備份。除了 HEIC 的備用解碼元件，程式依賴瀏覽器本身的圖片解碼功能，請維持瀏覽器更新。
 
 技術參考：[Canvas 輸出](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob) · [localStorage 行為](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) · [Pointer Capture](https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture)
 

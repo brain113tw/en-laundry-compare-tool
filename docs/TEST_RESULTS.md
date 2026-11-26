@@ -7,14 +7,15 @@
 | 比較工作區回歸 | 64 | 64 |
 | 新工具箱 | 125 | 125 |
 | 追加邊界與操作 | 11 | 11 |
-| 專案檔、觸控縮放、HEIC 辨識、未儲存提醒 | 94 | 94 |
-| 合計 | 294 | 294 |
+| 專案檔、觸控縮放、HEIC 辨識、未儲存提醒 | 104 | 104 |
+| HEIC 解碼與沙箱隔離 | 51 | 51 |
+| 合計 | 355 | 355 |
 
 ## 環境與限制
 
-Linux Chromium headless（工具箱檢查修正版重跑：Chromium 153.0.8010.12）/ Python Playwright。HTML 使用 page.set_content，因執行環境限制本機導航；沒有弱化正式程式的 CSP。下載由實際編碼產生 Blob，測試直接擷取 Blob 驗證格式、尺寸、位元組數與 ZIP CRC，未操作使用者 Windows 另存新檔視窗。
+Linux Chromium headless（工具箱檢查修正版重跑：Chromium 153.0.8010.12）/ Python Playwright。多數測試組的 HTML 使用 page.set_content；HEIC 測試組實際從本機資料夾（file://）與本機網頁伺服器開啟 `index.html` 與 `vendor/heic-decoder.html`。沒有弱化正式程式的 CSP。下載由實際編碼產生 Blob，測試直接擷取 Blob 驗證格式、尺寸、位元組數與 ZIP CRC，未操作使用者 Windows 另存新檔視窗。
 
-沒有驗證實體手機或平板的觸控、Safari 對 HEIC 的原生解碼、Windows 原生檔案總管拖放、file:// 導覽、Safari/Firefox、GitHub Pages 實際部署、全部 EXIF／色彩描述檔或所有惡意圖片。localStorage 寫入被拒絕時的明確提示有測，但未做關閉重開之後的持久儲存端到端驗證。
+沒有驗證實體手機或平板的觸控、Safari 對 HEIC 的原生解碼、Windows 原生檔案總管拖放、Safari/Firefox、GitHub Pages 實際部署、全部 EXIF／色彩描述檔或所有惡意圖片。HEIC 解碼元件只在 Chromium 執行過；本環境無法下載 Firefox。file:// 開啟只在 HEIC 測試組驗證。localStorage 寫入被拒絕時的明確提示有測，但未做關閉重開之後的持久儲存端到端驗證。
 
 ## 覆蓋範圍
 
@@ -24,9 +25,15 @@ Linux Chromium headless（工具箱檢查修正版重跑：Chromium 153.0.8010.1
 
 第二輪審查回歸：輸出尺寸超限時遮蔽頁仍顯示原圖且新遮蔽落在畫的位置、成品預覽清空並拒絕拖曳、修正尺寸後恢復並收回錯誤訊息；透明來源的馬賽克完全不透明且不留原始像素；細長圖最弱馬賽克的輸出粗細；新畫與拖動不選取、點選才選取並載入設定、各控制項只改自己的屬性、沒有選取時複製與刪除會說明；大圖誤點不留框也不毀裁切、改比例保留選區、整張選區視為未裁切；鍵盤連續調整只記一步、勾選框與滑桿有焦點時快捷鍵有效、清單重繪保留焦點；版型不含旋轉、預設名稱不撞名、舊版型不自動開 Logo；批次依清單順序並以資料夾名稱區分同名檔、報告的來源路徑與 PNG 品質欄、前綴清理、兩種警告都列出；停止鈕在任何分頁可用、停止後不留誤導清單；無 WEBP 編碼時的退回；對比工作區的忙碌提示、進度條歸零、鍵盤指定後焦點不丟、移除的照片在復原步驟用完後釋放、文字正規化。
 
+HEIC 解碼（`tests/check_heic.py`，從 file:// 與本機 HTTP 開啟）：十個合成樣本一次匯入，逐一比對顯示的顏色與應有的顏色（差距不超過 2／255）：一般、帶旋轉、旋轉加鏡像、分塊儲存、以 ICC 或 nclx 宣告 Display P3、兩者並存時以 ICC 為準、其他色域不換算、仿手機檔（分塊、旋轉、Display P3）、帶透明；操作紀錄註明色域；不透明者暫存為色度不抽樣的 JPEG、透明者為 PNG；原始位元組與檔名保留；整批共用一個沙箱框架、不可見、匯入後移除；進度文字；由兩張 HEIC 產生對比圖；工具箱自己的加入按鈕；專案檔保存原始 HEIC 並在開啟時重新解碼；解碼器還在啟動時被關閉會結束等待而不是卡住；損毀檔案略過且下一張用新的解碼器；超過像素上限在配置前拒絕；一般照片不啟動解碼器；非框架訊息被忽略；缺少 vendor 資料夾時約 8 秒後提示、之後立即略過且其他照片照常；解碼頁與背景執行緒無法連線、載入、執行其他程式碼或讀取上層；框架無法跳到別的網站；說謊的解碼頁被拒絕；先回報就緒才載入完成、而且一張要解超過 8 秒的解碼頁不會被誤判成失效；惡意頁面碰不到工具；網頁伺服器缺少 vendor 資料夾時的提示。另有五項靜態檢查：解碼頁的 CSP、頁面結構、元件的 SHA-256、主程式 CSP 只多開放同站內嵌、授權文件存在。
+
+新功能測試組另增：輸出檔名／批次格式／檔名前綴存入專案檔並還原、異常值截斷或改用預設、型別錯誤拒絕、舊專案檔開啟後為空白；照片總量上限只在回報 8 GB 以上的電腦版瀏覽器放寬、超過時略過並寫出上限、放寬後同一張可加入；批次清單重繪後保留鍵盤焦點。
+
+真實樣本對照（未列入上表，樣本不在 repo）：取 pillow-heif 測試集的 50 個 HEIC／HEIF 檔，包含 iPhone 的 Display P3 照片、小米手機照片、相機的 10 位元檔、帶旋轉、分塊、單色、透明、損毀與 2 億像素的檔案。能解碼的 47 個全部與參考解碼器（libheif 1.23.6，Display P3 以 LittleCMS 換算）相符：尺寸與方向相同，平均差距不超過 1.9／255，第 99 百分位不超過 7／255。差距較大的幾個檔案在解碼器直接輸出時就已如此，來自兩套解碼器的色度還原設定不同；暫存成 JPEG 的影響較小。兩個損毀檔與 2 億像素檔被略過並說明原因。1200 萬像素的 iPhone 照片約 1.2 秒，3300 萬像素的相機照片約 6.4 秒。
+
 ## 可重跑的檔案
 
-`tests/check_compare.py`、`tests/check_toolbox.py` 與 `tests/check_features.py`（專案檔、觸控、HEIC、未儲存提醒；使用 `tests/fixtures/sample.heic`）是開發者測試，需要 Python、Playwright、Pillow 及 Chromium。一般使用者只開 HTML，無須這些環境。
+`tests/check_compare.py`、`tests/check_toolbox.py`、`tests/check_features.py`（專案檔、觸控、HEIC 辨識、未儲存提醒）與 `tests/check_heic.py`（HEIC 解碼與隔離）是開發者測試，需要 Python、Playwright、Pillow 及 Chromium。HEIC 樣本在 `tests/fixtures/`，應有的顏色記在 `heic_expected.json`；樣本由 `tests/make_heic_fixtures.py` 產生，只有要改樣本時才需要再執行（另需 pillow-heif）。一般使用者只開 HTML，無須這些環境。
 
 `tests/additional_test_source.txt` 是追加11項測試的來源紀錄，使用工具箱測試產生的校準圖片。`tests/results.json` 保留各項結果。
 

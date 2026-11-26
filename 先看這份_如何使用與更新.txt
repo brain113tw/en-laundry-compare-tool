@@ -10,10 +10,11 @@
 不需要 Python、BAT、後端，也不用執行 tools 或 tests 資料夾中的開發者程式。
 
 en_compare_manager_v6_2_toolbox.html 與 index.html 的程式內容相同。單獨一個 HTML 也能處理照片，完整說明與截圖則在 ZIP 的 docs 資料夾。
+例外：iPhone 的 HEIC 照片在 Chrome / Edge 需要旁邊的 vendor 資料夾，請讓它和 HTML 放在一起。
 
 二、更新到 GitHub
 1. 先在舊工具匯出對比慣用版型 JSON 備份。
-2. 將解壓縮後的檔案與 docs、tools、tests 資料夾上傳到原 repo 根目錄；覆蓋同名檔案。
+2. 將解壓縮後的檔案與 docs、tools、tests、vendor 資料夾上傳到原 repo 根目錄；覆蓋同名檔案。
 3. 一定要包含根目錄 index.html。不要只上傳 ZIP，也不要多包一層資料夾。
 4. Commit message 可填：Update to v6.2 toolbox
 5. 等待對應這次新提交的 Pages 部署完成，再檢查左上顯示 v6.2。
@@ -26,7 +27,8 @@ en_compare_manager_v6_2_toolbox.html 與 index.html 的程式內容相同。單�
 - 工具箱與對比的慣用版型分開儲存，請各自匯出備份。
 - 照片 / Logo / 裁切 / 遮蔽只在目前分頁保留；要保留進度請按「儲存專案檔」，下次用「開啟專案檔」接續。
 - 專案檔（.enproj）內含原始照片，請當成客戶資料保管，不要上傳 GitHub。
-- HEIC 照片只有 Safari 17 以上能直接加入；Chrome / Edge 請先轉成 JPG。
+- iPhone 的 HEIC 照片可以直接加入。Chrome / Edge 靠 vendor 資料夾裡的解碼元件，每張約 1 秒到數秒；少了這個資料夾 HEIC 會被略過。
+- 一次載入的照片合計上限 1.2 億像素；記憶體 8 GB 以上的電腦用 Chrome / Edge 時為 2.4 億像素。超過請分批。
 - 本機 HTML 更換檔名或位置，版型可能不會自動共用；請用 JSON 備份搬移。
 - 只有左側勾選的圖片會納入批次；每張遮蔽會保留，不會被略過。
 - 新畫的遮蔽框與標記不會自動選取；要改已有的，在圖上點一下它。

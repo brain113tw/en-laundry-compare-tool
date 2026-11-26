@@ -1,14 +1,15 @@
 {
   "version": "6.2",
   "browser": "153.0.8010.12",
-  "environment": "Linux Chromium headless via Playwright; HTML loaded with page.set_content because local navigation is restricted in test environment.",
+  "environment": "Linux Chromium headless via Playwright. Most suites load the HTML with page.set_content; the HEIC suite opens index.html and vendor/heic-decoder.html from a local folder (file://) and from a local web server.",
   "totals": {
-    "checks": 294,
-    "passed": 294
+    "checks": 355,
+    "passed": 355
   },
   "limitations": [
     "No verification of the user Windows installation.",
-    "Native Windows file drag, file:// navigation, OS save dialog and GitHub Pages deployment were not tested end-to-end.",
+    "Native Windows file drag, the OS save dialog and GitHub Pages deployment were not tested end-to-end; file:// navigation is exercised only by the HEIC suite.",
+    "The bundled HEIC decoder and its sandbox were run in Chromium only; Firefox, Safari (including its native HEIC decoding), phones and tablets were not tested.",
     "Browser localStorage denied-path was tested; persistent cross-session storage not tested end-to-end.",
     "No AI background removal, AI upscaling or HTML capture is included."
   ],
@@ -247,7 +248,7 @@
       {
         "test": "No ordinary remote subresource requests",
         "passed": true,
-        "detail": "['blob:null/1e6b9c23-65fa-4251-8ab0-d1dd672ddcd5', 'blob:null/0a69fab6-895a-47d8-b548-12a13e50df34', 'blob:null/6865b1ab-61a2-4803-8aa8-7480eadf7025']"
+        "detail": "['blob:null/c9a0099a-07ab-4ef5-9b5b-a2182d809572', 'blob:null/4a7af17b-fdc2-456b-beb8-435c933bce00', 'blob:null/58c63e70-c9ad-4808-9cc6-493d2fe48935']"
       },
       {
         "test": "Remove photo drops it from list, assignment and batch",
@@ -959,7 +960,7 @@
       {
         "test": "No HTTP/S network requests from editor",
         "passed": true,
-        "detail": "['blob:null/92698fbc-d24b-40b8-b68a-7a942a931277', 'blob:null/66ad9abf-6a6e-45a8-91ca-e0cc5b68983b', 'blob:null/a0155fd1-e8a0-457e-a8f8-37d5a5677923', 'blob:null/9d18a094-5db2-4702-825d-68bf62d9a2cd']"
+        "detail": "['blob:null/984e0992-4132-41b5-b838-e04f18e2f324', 'blob:null/206803e5-8113-41af-87de-6ca05e33c57b', 'blob:null/e2751b89-6477-4bbe-b4c0-07e16ce87018', 'blob:null/f3e0bc30-788a-42f9-847e-462d99d8a924']"
       }
     ],
     "additional": [
@@ -1043,7 +1044,7 @@
       {
         "test": "HEIC either decodes natively or is skipped with specific guidance",
         "passed": true,
-        "detail": "已加入 0 張，略過 1 張（原因見操作紀錄）。 其中 1 張 HEIC 此瀏覽器無法解碼：請先轉成 JPG 再加入，或改用 Safari 17 以上（Mac／iPhone／iPad）開啟本工具。之後要直接拍成 JPG，可在 iPhone「設定 → 相機 → 格式」選「最相容」。"
+        "detail": "已加入 0 張，略過 1 張（原因見操作紀錄）。 其中 1 張 HEIC 無法解碼：這個瀏覽器不能直接顯示 HEIC，隨附的解碼元件也沒有載入。請確認 vendor 資料夾和這個 HTML 放在一起；或先把照片轉成 JPG，或改用 Safari 17 以上。"
       },
       {
         "test": "JPEG renamed to .heic is rejected by signature, not blamed on the browser",
@@ -1398,7 +1399,7 @@
       {
         "test": "Rejected, session unchanged: every photo is HEIC and this browser cannot decode HEIC",
         "passed": true,
-        "detail": "無法開啟專案檔：專案檔裡的照片在這個瀏覽器都無法載入。其中 3 張是 HEIC，這個瀏覽器無法解碼；請改用 Safari 17 以上開啟這個專案檔。 目前的照片與編輯沒有變更。"
+        "detail": "無法開啟專案檔：專案檔裡的照片在這個瀏覽器都無法載入。其中 3 張是 HEIC，這個瀏覽器不能直接顯示，隨附的解碼元件也沒有載入；請確認 vendor 資料夾和這個 HTML 放在一起，或改用 Safari 17 以上開啟這個專案檔。 目前的照片與編輯沒有變更。"
       },
       {
         "test": "No prototype pollution after hostile files",
@@ -1413,7 +1414,7 @@
       {
         "test": "A project with some HEIC photos opens the rest and says why",
         "passed": true,
-        "detail": "已開啟專案檔：2 張照片、1 組批次。有 1 張照片無法載入，相關設定已略過（詳見操作紀錄）。其中 1 張是 HEIC，這個瀏覽器無法解碼；請改用 Safari 17 以上開啟這個專案檔。"
+        "detail": "已開啟專案檔：2 張照片、1 組批次。有 1 張照片無法載入，相關設定已略過（詳見操作紀錄）。其中 1 張是 HEIC，這個瀏覽器不能直接顯示，隨附的解碼元件也沒有載入；請確認 vendor 資料夾和這個 HTML 放在一起，或改用 Safari 17 以上開啟這個專案檔。"
       },
       {
         "test": "Unpaired surrogates in project text are replaced, so every name can be written to a file again",
@@ -1443,7 +1444,7 @@
       {
         "test": "A session with an over-limit canvas can still be saved",
         "passed": true,
-        "detail": "專案檔已交給瀏覽器下載：en_project_20261124_1853.enproj，3 張照片，22.3 KB。下次用「開啟專案檔」接續。"
+        "detail": "專案檔已交給瀏覽器下載：en_project_20261126_0144.enproj，3 張照片，22.3 KB。下次用「開啟專案檔」接續。"
       },
       {
         "test": "It reopens with the same size still to be corrected",
@@ -1471,7 +1472,42 @@
         "detail": ""
       },
       {
+        "test": "The output name, batch format and file name prefix are saved in the project and restored",
+        "passed": true,
+        "detail": "['案例A_輸出', 'png', 'en_case']"
+      },
+      {
+        "test": "Odd values in those fields are trimmed or replaced by the default",
+        "passed": true,
+        "detail": "[100, 4, 40]"
+      },
+      {
+        "test": "Rejected, session unchanged: the output name is not text",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔的文字欄位不正確。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "Rejected, session unchanged: the file name prefix is not text",
+        "passed": true,
+        "detail": "無法開啟專案檔：專案檔的檔名前綴不正確。 目前的照片與編輯沒有變更。"
+      },
+      {
+        "test": "A project written before these fields existed opens with them empty",
+        "passed": true,
+        "detail": "['', 'webp', '']"
+      },
+      {
         "test": "A reopened project is not unsaved work, and previewing one of its cases does not change that",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Previewing a batch item from the keyboard keeps focus on that button",
+        "passed": true,
+        "detail": "2"
+      },
+      {
+        "test": "Removing a batch item from the keyboard moves focus to the item that takes its place",
         "passed": true,
         "detail": ""
       },
@@ -1486,9 +1522,281 @@
         "detail": ""
       },
       {
+        "test": "The photo budget is larger only on desktop browsers that report 8 GB of memory or more",
+        "passed": true,
+        "detail": "[240000000, 240000000, 120000000, 120000000, 120000000, 120000000]"
+      },
+      {
+        "test": "Photos beyond the budget are skipped and the reason names the budget",
+        "passed": true,
+        "detail": "已加入 2 張，略過 1 張（原因見操作紀錄）。請確認洗前 / 洗後順序。"
+      },
+      {
+        "test": "The larger budget accepts the photo the smaller one refused",
+        "passed": true,
+        "detail": "已加入 1 張。請確認洗前 / 洗後順序。"
+      },
+      {
         "test": "No runtime JS errors during the whole run",
         "passed": true,
         "detail": "[]"
+      }
+    ],
+    "heic": [
+      {
+        "test": "The decoder page allows only its own pinned script and WebAssembly: no network, no other code",
+        "passed": true,
+        "detail": "[\"default-src 'none'; script-src 'sha256-3D+5lm5VIA6EElUqF+LkQ3WaqHBSMd3IiTMAbKbQfYE=' 'wasm-unsafe-eval'; worker-src blob:; base-uri 'none'; form-action 'none'\"]"
+      },
+      {
+        "test": "The decoder page holds exactly the library as inert text and the reviewed glue script, and refers to nothing else",
+        "passed": true,
+        "detail": "738"
+      },
+      {
+        "test": "The bundled library is the pinned, unmodified libheif-js build",
+        "passed": true,
+        "detail": "1.23.5"
+      },
+      {
+        "test": "The main page gained only the permission to frame its own decoder page",
+        "passed": true,
+        "detail": "default-src 'none'; script-src 'sha256-xlaAdx/TM2mFmMW0Od8dV"
+      },
+      {
+        "test": "The licence texts ship next to the decoder",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Opens from a local folder without errors",
+        "passed": true,
+        "detail": "{'page': [], 'console': []}"
+      },
+      {
+        "test": "Every HEIC fixture is added in one import",
+        "passed": true,
+        "detail": "已加入 10 張。請確認洗前 / 洗後順序。"
+      },
+      {
+        "test": "A plain HEIC shows the right colours",
+        "passed": true,
+        "detail": "largest difference {'colour': 1, 'alpha': 0} of 255, 128 x 96"
+      },
+      {
+        "test": "A HEIC with a rotation box is shown turned",
+        "passed": true,
+        "detail": "largest difference {'colour': 1, 'alpha': 0} of 255, 96 x 128"
+      },
+      {
+        "test": "A HEIC with rotation and mirroring is shown turned and mirrored",
+        "passed": true,
+        "detail": "largest difference {'colour': 1, 'alpha': 0} of 255, 96 x 128"
+      },
+      {
+        "test": "A HEIC stored as tiles, as phones store them, is put together correctly",
+        "passed": true,
+        "detail": "largest difference {'colour': 1, 'alpha': 0} of 255, 128 x 96"
+      },
+      {
+        "test": "Display P3 declared by an ICC profile is converted to sRGB",
+        "passed": true,
+        "detail": "largest difference {'colour': 2, 'alpha': 0} of 255, 128 x 96"
+      },
+      {
+        "test": "Display P3 declared by an nclx box is converted to sRGB",
+        "passed": true,
+        "detail": "largest difference {'colour': 2, 'alpha': 0} of 255, 128 x 96"
+      },
+      {
+        "test": "When a file carries both, the ICC profile decides and not the nclx box",
+        "passed": true,
+        "detail": "largest difference {'colour': 2, 'alpha': 0} of 255, 128 x 96"
+      },
+      {
+        "test": "Another colour space is left as it is",
+        "passed": true,
+        "detail": "largest difference {'colour': 1, 'alpha': 0} of 255, 128 x 96"
+      },
+      {
+        "test": "A phone-like file (tiles, rotation, Display P3) shows the right colours the right way up",
+        "passed": true,
+        "detail": "largest difference {'colour': 2, 'alpha': 0} of 255, 96 x 128"
+      },
+      {
+        "test": "Transparency survives decoding",
+        "passed": true,
+        "detail": "largest difference {'colour': 2, 'alpha': 0} of 255, 128 x 96"
+      },
+      {
+        "test": "The log says which photos were converted from Display P3 and which use another colour space",
+        "passed": true,
+        "detail": "{'heic_patches.heic': '', 'heic_rotated.heic': '', 'heic_mirrored.heic': '', 'heic_grid.heic': '', 'heic_p3_icc.heic': 'p3', 'heic_p3_nclx.heic': 'p3', 'heic_p3_both.heic': 'p3', 'heic_bt2020.heic': 'other', 'heic_phone_like.heic': 'p3', 'heic_alpha.heic': ''}"
+      },
+      {
+        "test": "Opaque photos are kept as JPEG with full colour resolution, transparent ones as PNG",
+        "passed": true,
+        "detail": "[17, 17, 17]"
+      },
+      {
+        "test": "Each photo keeps its original HEIC bytes and name",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "One decoder frame serves the whole import",
+        "passed": true,
+        "detail": "[('/site/vendor/heic-decoder.html', 11)]"
+      },
+      {
+        "test": "The frame is sandboxed with scripts only, so the tool cannot be reached from it",
+        "passed": true,
+        "detail": "{'sandbox': 'allow-scripts', 'src': 'file:///tmp/en-heic-tests-_aifmcdu/site/vendor/heic-decoder.html', 'visibility': 'hidden', 'area': 0, 'messages': 11, 'origin': 'null', 'document': 'null', 'window': 'SecurityError', 'removed': True}"
+      },
+      {
+        "test": "The frame is invisible and is removed when the import ends",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Progress names the HEIC step while it runs",
+        "passed": true,
+        "detail": "['正在解碼 HEIC 1 / 10…', '正在解碼 HEIC 2 / 10…', '正在解碼 HEIC 3 / 10…']"
+      },
+      {
+        "test": "Ten small HEIC files decode in a few seconds",
+        "passed": true,
+        "detail": "0.4 s"
+      },
+      {
+        "test": "No errors and no policy violations while decoding",
+        "passed": true,
+        "detail": "{'page': [], 'console': []}"
+      },
+      {
+        "test": "A before / after picture is produced from two HEIC photos",
+        "passed": true,
+        "detail": "{'type': 'image/png', 'width': 1600, 'red': 97216, 'green': 95666}"
+      },
+      {
+        "test": "The toolbox takes a HEIC photo through its own file button",
+        "passed": true,
+        "detail": "({'colour': 2, 'alpha': 0}, {'w': 96, 'h': 128, 'any': [247, 198, 0, 255]}, '已加入 1 張。請點縮圖編輯，勾選則納入批次。')"
+      },
+      {
+        "test": "A project file stores the HEIC photos as they were",
+        "passed": true,
+        "detail": "['photos/0001.heic', 'photos/0002.heic']"
+      },
+      {
+        "test": "Opening that project decodes the HEIC photos again",
+        "passed": true,
+        "detail": "('已開啟專案檔：11 張照片、0 組批次。請確認洗前 / 洗後與各組設定。', {'colour': 2, 'alpha': 0})"
+      },
+      {
+        "test": "Closing the decoder while it is still starting ends the wait instead of hanging",
+        "passed": true,
+        "detail": "['closed early', False, '', True]"
+      },
+      {
+        "test": "Damaged HEIC files are skipped with a reason and the next file still decodes",
+        "passed": true,
+        "detail": "略過：cut_header.heic（HEIC 解碼失敗（no image in file））\n略過：cut_data.heic（HEIC 解碼失敗（decoding failed））\n略過：noise.heic（HEIC 解碼失敗（no image in file））\n匯入完成：1 張，略過 3 張。"
+      },
+      {
+        "test": "After a failure the next file gets a fresh decoder",
+        "passed": true,
+        "detail": "4"
+      },
+      {
+        "test": "A HEIC over the pixel limit is refused by the decoder before it allocates the picture",
+        "passed": true,
+        "detail": "ing failed））\n略過：noise.heic（HEIC 解碼失敗（no image in file））\n匯入完成：1 張，略過 3 張。\n略過：too_big.heic（單張超過 6000 萬像素）\n匯入完成：0 張，略過 1 張。"
+      },
+      {
+        "test": "Ordinary photos never start the decoder",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "Messages that do not come from the decoder frame are ignored",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "No script errors in the whole local run",
+        "passed": true,
+        "detail": "[]"
+      },
+      {
+        "test": "Without the vendor folder a HEIC is skipped and the message says what to do",
+        "passed": true,
+        "detail": "已加入 0 張，略過 1 張（原因見操作紀錄）。 其中 1 張 HEIC 無法解碼：這個瀏覽器不能直接顯示 HEIC，隨附的解碼元件也沒有載入。請確認 vendor 資料夾和這個 HTML 放在一起；或先把照片轉成 JPG，或改用 Safari 17 以上。"
+      },
+      {
+        "test": "That answer comes after a short wait, not a long one",
+        "passed": true,
+        "detail": "8.2 s"
+      },
+      {
+        "test": "The missing decoder is remembered: later HEIC files are skipped at once and other photos still load",
+        "passed": true,
+        "detail": "0.1 s"
+      },
+      {
+        "test": "Served over HTTP, HEIC photos decode the same way",
+        "passed": true,
+        "detail": "([2, 2], {'page': [], 'console': []})"
+      },
+      {
+        "test": "The real decoder page cannot send anything out, load anything or run other code",
+        "passed": true,
+        "detail": "({'code': 'blocked', 'fetch': 'blocked', 'load': 'blocked', 'socket': 'blocked', 'inline': 'blocked', 'parent': 'SecurityError', 'storage': 'SecurityError', 'violations': ['connect-src', 'img-src', 'script-src', 'script-src-elem']}, [])"
+      },
+      {
+        "test": "The worker that runs the library is under the same rules: no network, no other code",
+        "passed": true,
+        "detail": "({'code': 'blocked', 'fetch': 'blocked', 'load': 'blocked', 'socket': 'blocked', 'violations': ['connect-src', 'script-src', 'script-src-elem']}, [])"
+      },
+      {
+        "test": "The decoder frame cannot be sent to another site",
+        "passed": true,
+        "detail": "([{'directive': 'frame-src', 'blocked': 'http://127.0.0.1:42907'}], [])"
+      },
+      {
+        "test": "Answers with impossible sizes or missing pixels are rejected",
+        "passed": true,
+        "detail": "（HEIC 解碼結果不正確）\n略過：case2.heic（HEIC 解碼結果不正確）\n略過：case3.heic（HEIC 解碼結果不正確）\n略過：case4.heic（HEIC 解碼結果不正確）\n略過：case5.heic（HEIC 解碼結果不正確）\n略過：case6.heic（HEIC 解碼結果不正確）\n略過：case7.heic（HEIC 解碼元件發生錯誤）\n匯入完成：2 張，略過 8 張。"
+      },
+      {
+        "test": "A decoder that reports a crash only costs the photo it was working on",
+        "passed": true,
+        "detail": "[['case8.heic', 3, 1], ['case9.heic', 2, 2]]"
+      },
+      {
+        "test": "An answer for another request is ignored",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "A working decoder is not given up on, however the start-up events are ordered and however long a photo takes",
+        "passed": true,
+        "detail": "9.7 s, 已加入 1 張。請確認洗前 / 洗後順序。"
+      },
+      {
+        "test": "A hostile page in the decoder frame cannot reach the tool, its storage, pop-ups or the top window",
+        "passed": true,
+        "detail": "{'origin': 'null', 'parentDocument': 'SecurityError', 'parentWindow': 'SecurityError', 'storage': 'SecurityError', 'cookie': 'SecurityError', 'database': 'SecurityError', 'popup': 'blocked', 'top': 'SecurityError', 'readTool': 'blocked'}"
+      },
+      {
+        "test": "It cannot leave for another site either, and the photo is simply skipped",
+        "passed": true,
+        "detail": "([{'directive': 'frame-src', 'blocked': 'http://127.0.0.1:42907'}], [])"
+      },
+      {
+        "test": "On a web server without the vendor folder the same guidance appears",
+        "passed": true,
+        "detail": "已加入 0 張，略過 1 張（原因見操作紀錄）。 其中 1 張 HEIC 無法解碼：這個瀏覽器不能直接顯示 HEIC，隨附的解碼元件也沒有載入。請確認 vendor 資料夾和這個 HTML 放在一起；或先把照片轉成 JPG，或改用 Safari 17 以上。"
       }
     ]
   }
