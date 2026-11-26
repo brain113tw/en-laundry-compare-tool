@@ -137,6 +137,51 @@ with sync_playwright() as p:
  page.locator('#redoBtn').click();page.wait_for_timeout(60);record('Redo removes it again',page.evaluate('S.items.length')==n-1 and page.evaluate('(id)=>!item(id)',rid))
  page.evaluate('S.busy=false;')
  page.locator('#clearFiles').click();record('Clear resets undo before releasing sources',page.evaluate('S.items.length===0&&S.history.length===1&&S.future.length===0'))
+ # ---------------------------------------------------------------- review regressions (fresh page)
+ r=context.new_page();r.on('pageerror',lambda e:errors.append(str(e)));r.on('request',lambda q:reqs.append(q.url));r.on('dialog',lambda d:d.accept())
+ r.set_content(html);r.wait_for_timeout(100)
+ third=work/'demo_third.png';Image.new('RGB',(600,800),(190,150,120)).save(third)
+ r.locator('#fileInput').set_input_files([str(x) for x in files]+[str(third)]);r.wait_for_function('() => S.items.length===3&&!S.importing');r.wait_for_timeout(150)
+ rid=r.evaluate('S.items.map(i=>i.id)')
+ def rstatus():return r.locator('#status').text_content()
+ # A drop that cannot be taken says so, and a photo list re-render keeps keyboard focus.
+ drop='''data=>{const b=Uint8Array.from(atob(data),c=>c.charCodeAt(0));const dt=new DataTransfer();dt.items.add(new File([b],'late.png',{type:'image/png'}));document.querySelector('#files').dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer:dt}));}'''
+ r.evaluate('S.importing=true;void 0;');r.evaluate(drop,payload);r.wait_for_timeout(80)
+ record('Files dropped while an import is running are refused with a message',r.evaluate('S.items.length')==3 and '正在處理其他工作' in rstatus() and r.locator('#status').get_attribute('class')=='error',rstatus())
+ r.click('#toolboxOpen');r.wait_for_timeout(60)
+ record('Opening the toolbox during an import says why it does not open',not r.locator('#tbApp').is_visible() and '正在讀取照片' in rstatus(),rstatus())
+ r.evaluate('S.importing=false;void 0;')
+ r.locator(f'#files .file[data-id="{rid[2]}"] button').nth(1).focus();r.keyboard.press('Enter');r.wait_for_timeout(80)
+ record('Assigning a photo from the keyboard keeps focus on the same button',r.evaluate('S.after')==rid[2] and r.evaluate("document.activeElement.textContent==='洗後'&&document.activeElement.closest('.file').dataset.id")==rid[2])
+ record('Assigning an id that is no longer in the list is ignored',r.evaluate("(()=>{const a=S.before;assign('before','gone');return S.before===a;})()") and not errors,errors)
+ # Undo from a checkbox, and the drop highlight that expires by itself.
+ r.evaluate("(()=>{const e=document.querySelector('[data-field=\"showTitle\"]');for(let d=e.closest('details');d;d=d.parentElement.closest('details'))d.open=true;e.focus();e.click();})()");r.wait_for_timeout(60)
+ focused=r.evaluate("document.activeElement===document.querySelector('[data-field=\"showTitle\"]')&&S.cfg.showTitle===true");r.keyboard.press('Control+z');r.wait_for_timeout(80)
+ record('Ctrl+Z works while a checkbox has focus',focused and r.evaluate('S.cfg.showTitle') is False)
+ r.evaluate('''()=>{const dt=new DataTransfer();dt.items.add(new File(['x'],'a.png',{type:'image/png'}));document.querySelector('#files').dispatchEvent(new DragEvent('dragenter',{dataTransfer:dt,bubbles:true,cancelable:true}));}''')
+ lit=r.evaluate("document.querySelector('.library').classList.contains('drop-active')");r.wait_for_timeout(1150)
+ record('The drop highlight goes away by itself when the drag ends without a drop',lit and not r.evaluate("document.querySelector('.library').classList.contains('drop-active')"))
+ # Batch progress starts from zero on every run.
+ r.locator('#casesTab').click();r.locator('#addCase').click();r.wait_for_timeout(60)
+ r.evaluate("window.savedFiles=[];download=(blob,name)=>{window.savedFiles.push(name);};window.__ef=encodeFormat;encodeFormat=async(...a)=>{await new Promise(x=>setTimeout(x,250));return window.__ef(...a);};void 0;")
+ r.locator('#batchExport').click();r.wait_for_function('() => savedFiles.length===1&&!S.busy');r.locator('#batchExport').click();r.wait_for_timeout(90)
+ width=r.evaluate("document.querySelector('#batchProgress span').style.width");r.wait_for_function('() => savedFiles.length===2&&!S.busy')
+ record('The batch progress bar starts at zero on a second run',width=='0%',width)
+ r.evaluate('encodeFormat=window.__ef;void 0;');r.locator('#photosTab').click()
+ # A removed photo is released once no undo step can bring it back.
+ r.locator(f'#files .file[data-id="{rid[2]}"] button.danger').click();r.wait_for_timeout(80);held=r.evaluate('S.pool.size')
+ r.evaluate('for(let i=0;i<85;i++){S.cfg.quality=40+(i%50);commit();pushHistory();}void 0;')
+ record('A removed photo is released when its undo steps are gone',held==3 and r.evaluate('S.pool.size')==2 and r.evaluate('S.items.length')==2 and r.evaluate('(id)=>!S.pool.has(id)',rid[2]))
+ # Text that goes into files stays well-formed, and a cut does not split a character.
+ record('Names are well-formed text and a length cut does not split a character',r.evaluate('''()=>{const pair='\\uD83D\\uDE00',fav=sanitizeFavoriteList({favorites:[{name:'x'.repeat(39)+pair,cfg:{quality:80}}]}).list[0].name;
+  return safeName('case\\uD800').isWellFormed()&&fav.isWellFormed()&&fav.length===39&&sanitizeConfig({title:'a\\uDC00b'}).cfg.title==='a\\uFFFDb';}'''))
+ # Without canvas WebP encoding the batch format falls back to PNG.
+ r.evaluate('EnToolbox.core.setWebpSupport(false)');r.wait_for_timeout(40)
+ record('Without WebP encoding the batch format list offers PNG instead',r.locator('#batchFormat').input_value()=='png' and r.locator('#batchFormat option[value="webp"]').is_disabled())
+ r.evaluate('EnToolbox.core.setWebpSupport(true)')
+ # Clearing the session also resets what the toolbox was editing.
+ r.evaluate('(id)=>EnToolbox.select(id)',rid[0]);r.locator('#clearFiles').click();r.wait_for_timeout(80)
+ record('Clearing the photo list also resets the toolbox',r.evaluate('S.items.length')==0 and r.evaluate('EnToolbox.getState().active') is None and r.evaluate('EnToolbox.getState().doc') is None)
  record('No unhandled JS runtime errors',not errors,errors)
  meta={'browser':browser.version,'platform':'Linux; Chromium headless, about:blank set_content (navigation blocked by environment policy)','results':results,'unhandled_errors':errors,'storage_test':'Storage-denied real path tested; cross-session persistence not browser-end-to-end verified.'}
  (work/'test-results.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2))
