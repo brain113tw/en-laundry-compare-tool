@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="沂恩洗前洗後對比圖工具。照片在瀏覽器處理，支援 WEBP、PNG、SVG、批次和慣用版型。">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-xlaAdx/TM2mFmMW0Od8dVY/w+iPiPjBC+4bk3TTzQfs=' 'sha256-BEkjZxOY28wEdw9IkdgWBdJU3cZGclspbiFhhEtbfKI='; script-src-attr 'none'; style-src 'unsafe-inline'; img-src data: blob:; connect-src 'none'; font-src 'none'; object-src 'none'; frame-src 'self'; worker-src 'none'; media-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ZNWI4iQCT61+MIqrvbr5T4dryW9DPQg+xMXqLbdfaoI=' 'sha256-BEkjZxOY28wEdw9IkdgWBdJU3cZGclspbiFhhEtbfKI='; script-src-attr 'none'; style-src 'unsafe-inline'; img-src data: blob:; connect-src 'none'; font-src 'none'; object-src 'none'; frame-src 'self'; worker-src 'none'; media-src 'none'; base-uri 'none'; form-action 'none'">
 <title>沂恩對比圖管理器 v6.2｜批次與安全區</title>
 <style>
 :root{--bg:#edf1f3;--panel:#fff;--ink:#22332f;--muted:#657773;--line:#dce5e1;--green:#126750;--pale:#ecf5f0;--gold:#a77028;--amber:#fff4df;--red:#a63e34;--shadow:0 10px 30px #16352912}
@@ -158,8 +158,9 @@ const MAX_SCAN_ENTRIES=1000, MAX_SCAN_DEPTH=16;
 const MAX_INPUT_BYTES=256*1024*1024, MAX_LOADED_PIXELS=120000000, MAX_LOADED_PIXELS_ROOMY=240000000;
 // Loaded photos stay decoded, up to about 4 bytes per pixel, until the browser wants the memory back. Desktop Chrome / Edge on a computer that
 // reports 8 GB or more gets the larger budget (measured there with 244 megapixels of HEIC photos: about 2.5 GB across the browser's processes,
-// part of it given back under memory pressure). Phones, tablets and browsers that do not report their memory keep the smaller one.
-const pixelBudget=()=>navigator.deviceMemory>=8&&navigator.userAgentData?.mobile===false?MAX_LOADED_PIXELS_ROOMY:MAX_LOADED_PIXELS;
+// part of it given back under memory pressure). Phones, tablets (the main pointer is a finger) and browsers that do not report their memory keep the smaller one.
+const pixelBudget=()=>navigator.deviceMemory>=8&&navigator.userAgentData?.mobile===false&&matchMedia('(pointer:fine)').matches?MAX_LOADED_PIXELS_ROOMY:MAX_LOADED_PIXELS;
+const overBudget=budget=>'已載入照片合計超過 '+budget/1e8+' 億像素，請拆批';
 const STRING_LIMITS={title:100,beforeText:40,afterText:40,watermark:120,dateText:24};
 const ENUMS={layout:['full','custom','square','portrait','wide'],fit:['contain','cover'],labelWeight:['500','600','700','800']};
 const isRecord=v=>v!==null&&typeof v==='object'&&!Array.isArray(v)&&Object.getPrototypeOf(v)===Object.prototype;
@@ -321,10 +322,11 @@ async function verifyImageSignature(file,ext){
   if(!kind&&b.length>=12&&str(4,4)==='ftyp'){const boxEnd=Math.min(b.length,Math.max(16,((b[0]<<24)|(b[1]<<16)|(b[2]<<8)|b[3])>>>0)),brands=[str(8,4)];for(let o=16;o+4<=boxEnd;o+=4)brands.push(str(o,4));if(brands.some(x=>HEIC_BRANDS.includes(x)))kind='heic';}
   if(kind!==(ext==='jpg'?'jpeg':isHeicExt(ext)?'heic':ext))throw Error('檔案內容與副檔名不符或不是支援的點陣圖片');
 }
-const HEIC_HINT=n=>` 其中 ${n} 張 HEIC 無法解碼：這個瀏覽器不能直接顯示 HEIC，隨附的解碼元件也沒有載入。請確認 vendor 資料夾和這個 HTML 放在一起；或先把照片轉成 JPG，或改用 Safari 17 以上。`;
+const HEIC_HINT=n=>` 其中 ${n} 張 HEIC 無法解碼：這個瀏覽器不能直接顯示 HEIC，隨附的解碼元件也沒有載入。請確認 vendor 資料夾和這個 HTML 放在一起，放好後再加入一次；或先把照片轉成 JPG，或改用 Safari 17 以上。`;
 // ---- HEIC in browsers that cannot show it themselves (all but Safari): a bundled decoder, libheif (LGPL-3.0), in vendor/heic-decoder.html.
 // It runs in a sandboxed frame: it is handed the bytes of one file and answers with pixels, and it cannot reach this page, storage or the network. Its answers are checked like any other input.
-const HEIC={frame:null,ready:null,settle:null,fail:null,gone:'',seq:0,waiting:new Map(),limit:60000000};
+// wait (ms): start / local = how long the decoder page may take to load from a web server / from a local file, grace = how long after loading it may take to report ready, decode = one photo.
+const HEIC={frame:null,ready:null,settle:null,fail:null,gone:'',seq:0,waiting:new Map(),limit:60000000,wait:{start:60000,local:15000,grace:8000,decode:180000}};
 function heicUnavailable(why){const e=Error(why);e.unavailable=true;return e;}
 // Ends everything that is waiting on the frame: a frame still starting up, and every file it was asked to decode.
 function heicClose(why='HEIC 解碼元件已關閉'){const fr=HEIC.frame,fail=HEIC.fail;HEIC.frame=HEIC.ready=HEIC.settle=HEIC.fail=null;if(fr)fr.remove();fail?.(Error(why));for(const answer of HEIC.waiting.values())answer(Error(why));HEIC.waiting.clear();}
@@ -335,11 +337,11 @@ function heicOpen(){
   const fr=document.createElement('iframe');fr.setAttribute('sandbox','allow-scripts');fr.setAttribute('aria-hidden','true');fr.tabIndex=-1;fr.title='HEIC decoder';fr.style.cssText='position:fixed;left:0;top:0;width:0;height:0;border:0;visibility:hidden';
   HEIC.frame=fr;
   HEIC.ready=new Promise((resolve,reject)=>{
-    let grace=0;const cap=setTimeout(()=>give('解碼元件載入逾時'),60000);
+    let grace=0;const cap=setTimeout(()=>give('解碼元件載入逾時'),src.protocol==='file:'?HEIC.wait.local:HEIC.wait.start);
     // Decides once whether this frame is usable. Later calls (a timer still pending, a second load event) do nothing.
     function give(why){if(HEIC.settle!==give)return;clearTimeout(cap);clearTimeout(grace);HEIC.settle=HEIC.fail=null;if(why){HEIC.gone=why;reject(heicUnavailable(why));heicClose(why);}else resolve();}
     // The page announces itself once its decoder has started. A missing file loads an error page instead, which never does.
-    fr.addEventListener('load',()=>{if(HEIC.settle===give){clearTimeout(grace);grace=setTimeout(()=>give('找不到 vendor/heic-decoder.html，或它無法啟動'),8000);}});
+    fr.addEventListener('load',()=>{if(HEIC.settle===give){clearTimeout(grace);grace=setTimeout(()=>give('找不到 vendor/heic-decoder.html，或它無法啟動'),HEIC.wait.grace);}});
     HEIC.settle=give;HEIC.fail=reject;
   });
   fr.src=src.href;document.body.append(fr);return HEIC.ready;
@@ -349,19 +351,46 @@ window.addEventListener('message',e=>{const fr=HEIC.frame;if(!fr||e.source!==fr.
   else if(m.type==='fatal'){if(HEIC.settle)HEIC.settle('解碼元件無法啟動');else heicClose('HEIC 解碼元件發生錯誤');}
   else if(m.type==='result'){const answer=HEIC.waiting.get(m.id);if(answer){HEIC.waiting.delete(m.id);answer(null,m);}}});
 // Returns {blob,colour}: the picture re-encoded so the browser can show it, and 'p3' / 'other' when the file declared a colour space other than sRGB.
-async function heicDecode(file){
-  await heicOpen();
-  const buffer=await file.arrayBuffer(),id=++HEIC.seq,target=HEIC.frame?.contentWindow;
-  if(!target)throw Error('HEIC 解碼元件已關閉');
-  // The timer belongs to this request only: once the request has been answered it can no longer close a frame that serves a later file.
-  const m=await new Promise((resolve,reject)=>{const timer=setTimeout(()=>{if(HEIC.waiting.delete(id)){heicClose();reject(Error('HEIC 解碼逾時'));}},180000);HEIC.waiting.set(id,(err,msg)=>{clearTimeout(timer);err?reject(err):resolve(msg);});target.postMessage({type:'decode',id,buffer,maxPixels:HEIC.limit},'*',[buffer]);});
-  // After a failure the decoder may be in any state: the next file gets a fresh one.
-  if(m.ok!==true){heicClose();const why=String(m.message||'').replace(/[^\x20-\x7e]/g,' ').slice(0,80);throw Error(/^too large/.test(why)?'單張超過 6000 萬像素':'HEIC 解碼失敗'+(why?'（'+why+'）':''));}
-  const w=m.width,h=m.height;if(!Number.isInteger(w)||!Number.isInteger(h)||w<1||h<1||w*h>HEIC.limit||!(m.buffer instanceof ArrayBuffer)||m.buffer.byteLength!==w*h*4){heicClose();throw Error('HEIC 解碼結果不正確');}
+// Every photo gets a decoder of its own and the decoder is discarded as soon as it has answered: whatever one file does to its decoder cannot change how another photo is decoded.
+async function heicDecode(file,maxPixels=HEIC.limit){
+  const most=Math.min(maxPixels,HEIC.limit);let m;
+  try{
+    await heicOpen();
+    const buffer=await file.arrayBuffer(),id=++HEIC.seq,target=HEIC.frame?.contentWindow;
+    if(!target)throw Error('HEIC 解碼元件已關閉');
+    // The timer belongs to this request only: once the request has been answered it can no longer close a frame that serves a later file.
+    m=await new Promise((resolve,reject)=>{const timer=setTimeout(()=>{if(HEIC.waiting.delete(id)){heicClose();reject(Error('HEIC 解碼逾時'));}},HEIC.wait.decode);HEIC.waiting.set(id,(err,msg)=>{clearTimeout(timer);err?reject(err):resolve(msg);});target.postMessage({type:'decode',id,buffer,maxPixels:most,maxCoded:HEIC.limit},'*',[buffer]);});
+  }finally{heicClose();}
+  if(m.ok!==true){
+    const why=String(m.message||'').replace(/[^\x20-\x7e]/g,' ').slice(0,80),big=/^too large: (\d{1,9}) x (\d{1,9})$/.exec(why);
+    // The caller tells a photo that is too large in itself from one that only exceeds what is left of the total.
+    if(big){const e=Error('單張超過 6000 萬像素');e.pixels=big[1]*big[2];throw e;}
+    throw Error('HEIC 解碼失敗'+(why?'（'+why+'）':''));
+  }
+  const w=m.width,h=m.height;if(!Number.isInteger(w)||!Number.isInteger(h)||w<1||h<1||w*h>most||!(m.buffer instanceof ArrayBuffer)||m.buffer.byteLength!==w*h*4)throw Error('HEIC 解碼結果不正確');
   const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(m.buffer),w,h),0,0);
   // Kept as an encoded image the browser decodes on demand, not as a canvas that pins four bytes per pixel for the whole session.
   // JPEG at quality 1 keeps full colour resolution (lower settings halve it); a picture with transparency is kept as PNG.
   try{return {blob:await canvasBlob(cv,m.opaque===true?'image/jpeg':'image/png',1),colour:m.colour==='p3'||m.colour==='other'?m.colour:''};}finally{cv.width=cv.height=1;}
+}
+// The number of pixels a HEIC declares for its main picture, read from the file's header without decoding it. 0 when it cannot be told.
+async function heicPixels(file){
+  try{
+    const b=new Uint8Array(await file.slice(0,524288).arrayBuffer()),dv=new DataView(b.buffer),tag=o=>String.fromCharCode(b[o],b[o+1],b[o+2],b[o+3]);
+    const boxes=(from,to)=>{const list=[];for(let o=from;o+8<=to;){let size=dv.getUint32(o),head=8;if(size===1){if(o+16>to)break;size=dv.getUint32(o+8)*4294967296+dv.getUint32(o+12);head=16;}else if(size===0)size=to-o;if(size<head||o+size>to)break;list.push({type:tag(o+4),start:o+head,end:o+size});o+=size;}return list;};
+    const meta=boxes(0,b.length).find(x=>x.type==='meta');if(!meta)return 0;
+    const inMeta=boxes(meta.start+4,meta.end),pitm=inMeta.find(x=>x.type==='pitm'),iprp=inMeta.find(x=>x.type==='iprp');if(!pitm||!iprp)return 0;
+    const inIprp=boxes(iprp.start,iprp.end),ipco=inIprp.find(x=>x.type==='ipco');if(!ipco)return 0;
+    const props=boxes(ipco.start,ipco.end),primary=dv.getUint8(pitm.start)===0?dv.getUint16(pitm.start+4):dv.getUint32(pitm.start+4);
+    for(const ipma of inIprp.filter(x=>x.type==='ipma')){
+      const longId=dv.getUint8(ipma.start)>0,wide=dv.getUint8(ipma.start+3)&1;let o=ipma.start+8;
+      for(let items=dv.getUint32(ipma.start+4);items>0&&o<ipma.end;items--){
+        const id=longId?dv.getUint32(o):dv.getUint16(o);o+=longId?4:2;
+        for(let links=dv.getUint8(o++);links>0;links--){const p=props[(wide?dv.getUint16(o)&0x7fff:dv.getUint8(o)&0x7f)-1];o+=wide?2:1;if(id===primary&&p&&p.type==='ispe'&&p.start+12<=p.end)return dv.getUint32(p.start+4)*dv.getUint32(p.start+8);}
+      }
+    }
+  }catch(_){}
+  return 0;
 }
 function loadImage(im,url){return new Promise((res,rej)=>{const timer=setTimeout(()=>{im.onload=im.onerror=null;im.removeAttribute('src');rej(Error('圖片解碼超時'));},15000);im.onload=()=>{clearTimeout(timer);res();};im.onerror=()=>{clearTimeout(timer);const er=Error('瀏覽器無法解碼');er.undecodable=true;rej(er);};im.src=url;});}
 // Decodes files into photo records without touching the session. `base` is the list they will join, so the count, size and pixel limits and the duplicate check include it.
@@ -380,20 +409,26 @@ async function decodeEntries(entries,base,progress){
       catch(err){
         // The browser cannot show this HEIC itself: hand the bytes to the bundled decoder and carry on with its picture.
         if(!(isHeicExt(ext)&&err.undecodable))throw err;
-        im.removeAttribute('src');URL.revokeObjectURL(url);url=null;progress?.(n,entries.length,'解碼 HEIC');
-        const got=await heicDecode(f);url=URL.createObjectURL(got.blob);im=new Image();await loadImage(im,url);
+        im.removeAttribute('src');URL.revokeObjectURL(url);url=null;
+        // A photo that cannot fit is turned away from what its header says, before any decoder is started. The decoder is given the same limit, so a header that understates the size gains nothing.
+        const room=budget-pixels,declared=await heicPixels(f);
+        if(declared>HEIC.limit)throw Error('單張超過 6000 萬像素');
+        if(room<1||declared>room)throw Error(overBudget(budget));
+        progress?.(n,entries.length,'解碼 HEIC');
+        let got;try{got=await heicDecode(f,room);}catch(e){throw e.pixels<=HEIC.limit?Error(overBudget(budget)):e;}
+        url=URL.createObjectURL(got.blob);im=new Image();await loadImage(im,url);
         if(got.colour)log('HEIC：'+p+(got.colour==='p3'?'（Display P3 已換算成 sRGB）':'（色彩描述檔不是 sRGB 或 Display P3，顏色可能略有差異）'));
       }
       const w=im.naturalWidth,h=im.naturalHeight;if(!w||!h||w*h>60000000)throw Error('單張超過 6000 萬像素或尺寸無效');
-      if(pixels+w*h>budget)throw Error('已載入照片合計超過 '+budget/1e8+' 億像素，請拆批');
+      if(pixels+w*h>budget)throw Error(overBudget(budget));
       let source=im,thumb=null;if(ext==='gif'){source=document.createElement('canvas');source.width=w;source.height=h;source.getContext('2d').drawImage(im,0,0);thumb=source.toDataURL('image/png');}
       const rec={id:uid(),file:f,path:p,key:k,url,thumb,img:source,w,h};out.recs.push(rec);out.slots[n]=rec;seen.add(k);bytes+=f.size;pixels+=w*h;out.count++;
       if(ext==='gif')log('GIF 固定載入時的單一畫面：'+p);
     }catch(err){if(im)im.removeAttribute('src');if(url)URL.revokeObjectURL(url);if(isHeicExt(ext)&&err.unavailable){out.heic++;log('略過：'+p+'（此瀏覽器無法解碼 HEIC；'+err.message+'）');}else log('略過：'+p+'（'+err.message+'）');out.skipped++;}
     await new Promise(r=>setTimeout(r,0));
   }
-  // The decoder and its memory are only needed while files are being read.
-  if(HEIC.frame)heicClose();
+  // Nothing of the decoder outlives the import. One that could not be loaded is tried again next time: the vendor folder may have been put back since.
+  if(HEIC.frame)heicClose();HEIC.gone='';
   return out;
 }
 // Returns {count,skipped,heic}, or null when the import could not start.
@@ -649,7 +684,7 @@ async function readProject(file){
 // Decode the project's photos before anything is replaced: the current session survives a project whose photos cannot be shown here.
 async function stageProject(plan){
   const staged=await decodeEntries(plan.files.map(x=>({file:x.file,path:x.path})),[],(n,total,what)=>projectNotify(`正在${what||'載入專案照片'} ${n+1} / ${total}…`));
-  const missing=plan.files.length-staged.count,heicNote=staged.heic?`其中 ${staged.heic} 張是 HEIC，這個瀏覽器不能直接顯示，隨附的解碼元件也沒有載入；請確認 vendor 資料夾和這個 HTML 放在一起，或改用 Safari 17 以上開啟這個專案檔。`:'',drop=()=>{for(const r of staged.recs)URL.revokeObjectURL(r.url);};
+  const missing=plan.files.length-staged.count,heicNote=staged.heic?`其中 ${staged.heic} 張是 HEIC，這個瀏覽器不能直接顯示，隨附的解碼元件也沒有載入；請確認 vendor 資料夾和這個 HTML 放在一起後再開啟一次，或改用 Safari 17 以上開啟這個專案檔。`:'',drop=()=>{for(const r of staged.recs)URL.revokeObjectURL(r.url);};
   if(!staged.count){drop();throw Error('專案檔裡的照片在這個瀏覽器都無法載入。'+heicNote);}
   if(missing&&S.items.length&&!confirm(`專案檔的 ${plan.files.length} 張照片中有 ${missing} 張無法載入。${heicNote}仍要取代目前分頁的內容嗎？`)){drop();return null;}
   return {staged,missing,heicNote};
@@ -699,6 +734,8 @@ async function importFavoritesFile(file){if(S.busy||S.importing||S.drag)return;s
 function exportSettingsFile(){const data={version:'6.2',cfg:clone(S.cfg)};download(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),'en_compare_settings_v6_2.json');status('設定檔已下載。');}
 async function importSettingsFile(file){if(S.busy||S.importing||S.drag)return;setBusy(true);try{const obj=await readJSONFile(file);if(!isRecord(obj)||!isRecord(obj.cfg)||(obj.type!==undefined&&obj.type!=='settings'))throw Error('設定檔需包含 cfg 物件。');const clean=sanitizeConfig(obj.cfg);checkpoint();S.cfg=clean.cfg;syncControls();commit();pushHistory();importNotes(clean.notes);status('設定檔已載入；已檢查欄位型別、數值範圍與文字長度。');}catch(e){fail(e);}finally{$('settingsInput').value='';setBusy(false);if(ready())estimateTimer=setTimeout(estimate,850);}}
 $('exportSettings').onclick=exportSettingsFile;$('importSettings').onclick=()=>$('settingsInput').click();$('settingsInput').onchange=e=>{const f=e.target.files?.[0];if(f)importSettingsFile(f);};$('saveFavorite').onclick=saveFavorite;$('exportFavorites').onclick=exportFavoritesFile;$('importFavorites').onclick=()=>$('favoritesInput').click();$('favoritesInput').onchange=e=>{const f=e.target.files?.[0];if(f)importFavoritesFile(f);};$('clearFavorites').onclick=()=>{if(S.busy||S.importing)return;if(!favorites.length)return;if(!confirm('清除全部慣用版型？'))return;favorites=[];persistFavorites();renderFavorites();status('已清除全部慣用版型。');};
+// A held Enter key must not repeat a destructive button: after a removal, keyboard focus moves to the button of the item that takes its place.
+document.addEventListener('keydown',e=>{if(e.repeat&&e.key==='Enter'&&e.target instanceof HTMLButtonElement&&e.target.classList.contains('danger'))e.preventDefault();},true);
 $('undoBtn').onclick=undo;$('redoBtn').onclick=redo;document.addEventListener('keydown',e=>{if(document.body.classList.contains('tool-open')||textEntryTarget(e))return;if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&e.key.toLowerCase()==='z'){e.preventDefault();undo();}else if(((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y')||((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key.toLowerCase()==='z')){e.preventDefault();redo();}});document.querySelectorAll('.alignBtn').forEach(b=>b.onclick=()=>{if(S.busy)return;alignTarget(b.dataset.alignTarget,b.dataset.align);});
 // Another tab saved or deleted a layout: show its list instead of overwriting it at the next save here.
 window.addEventListener('storage',e=>{if(e.key!==FAVORITES_KEY&&e.key!==null)return;try{localStorage.getItem(FAVORITES_KEY);}catch(_){return;}loadFavorites();});

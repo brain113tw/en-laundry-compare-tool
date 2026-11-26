@@ -6,6 +6,9 @@ Needs Python with Pillow and pillow-heif (which brings its own libheif and HEVC 
 Every picture is a 4 x 3 board of flat colour patches, never a customer photo. The expected colours written to
 heic_expected.json are derived from the patch colours themselves (turned, mirrored and colour-converted as the file says),
 not from another decoder; this script then checks that the reference decoder agrees with them.
+
+One more file is deliberately dishonest: heic_big_tiles.heic says it is a 64 x 64 picture but is stored as two tiles of
+8192 x 8192. It stands for files made to keep a decoder busy and must be refused. Writing it needs about 1 GB of memory.
 """
 from pathlib import Path
 from PIL import Image, ImageCms
@@ -23,11 +26,11 @@ ALPHA = [[255, 128, 255, 64], [255, 255, 0, 255], [128, 255, 255, 255]]
 TURN = {1: None, 5: Image.Transpose.TRANSPOSE, 6: Image.Transpose.ROTATE_270}
 
 
-def board(alpha=False):
-    im = Image.new('RGBA' if alpha else 'RGB', (CELL * 4, CELL * 3))
+def board(alpha=False, cell=CELL):
+    im = Image.new('RGBA' if alpha else 'RGB', (cell * 4, cell * 3))
     for r, row in enumerate(BOARD):
         for c, col in enumerate(row):
-            im.paste(col + ((ALPHA[r][c],) if alpha else ()), (c * CELL, r * CELL, (c + 1) * CELL, (r + 1) * CELL))
+            im.paste(col + ((ALPHA[r][c],) if alpha else ()), (c * cell, r * cell, (c + 1) * cell, (r + 1) * cell))
     return im
 
 
@@ -158,6 +161,28 @@ def add_icc_box(data, icc):
     return bytes(out)
 
 
+BIG_TILE = 8192
+
+
+def big_tiles():
+    """A tiled file whose declared picture is tiny while each of its tiles is larger than the largest photo the tool accepts."""
+    Image.MAX_IMAGE_PIXELS = None
+    im = Image.new('RGB', (BIG_TILE, BIG_TILE * 2), (200, 60, 60))
+    for y in range(0, im.height, BIG_TILE // 4):
+        im.paste((60, 170, 80), (0, y, im.width, y + BIG_TILE // 8))
+    buf = io.BytesIO()
+    im.save(buf, format='HEIF', quality=30, tile_size=BIG_TILE)
+    data = bytearray(buf.getvalue())
+    # the grid descriptor (version, flags, rows - 1, columns - 1, width, height) and the size property of the grid item both get the small size
+    descriptor = struct.pack('>BBBBHH', 0, 0, 1, 0, BIG_TILE, BIG_TILE * 2)
+    assert data.count(descriptor) == 1
+    struct.pack_into('>HH', data, data.find(descriptor) + 4, 64, 64)
+    whole = b'ispe' + struct.pack('>III', 0, BIG_TILE, BIG_TILE * 2)
+    assert data.count(whole) == 1 and data.count(b'ispe' + struct.pack('>III', 0, BIG_TILE, BIG_TILE)) == 1
+    struct.pack_into('>II', data, data.find(whole) + 8, 64, 64)
+    return bytes(data)
+
+
 def exif_orientation(n):
     ex = Image.Exif(); ex[0x0112] = n
     return ex.tobytes()
@@ -175,6 +200,8 @@ FIXTURES = [
     ('heic_bt2020.heic', 1, 'srgb', 'other', {'color_primaries': 9, 'transfer_characteristics': 13, 'matrix_coefficients': 6, 'full_range_flag': 1}),
     ('heic_phone_like.heic', 6, 'p3', 'p3', {'tile_size': 64, 'icc_profile': P3_ICC, 'chroma': 420}),
     ('heic_alpha.heic', 1, 'srgb', '', {'alpha': True}),
+    # the size of a phone photo (4032 x 3024, 12 megapixels), stored as 512-pixel tiles
+    ('heic_large.heic', 1, 'srgb', '', {'cell': 1008, 'tile_size': 512, 'chroma': 420}),
 ]
 
 
@@ -183,8 +210,8 @@ def build():
     worst = 0
     for name, orientation, declared, reports, options in FIXTURES:
         options = dict(options)
-        alpha, add_icc = options.pop('alpha', False), options.pop('add_icc', False)
-        source = board(alpha)
+        alpha, add_icc, cell = options.pop('alpha', False), options.pop('add_icc', False), options.pop('cell', CELL)
+        source = board(alpha, cell)
         buf = io.BytesIO()
         kw = {'quality': 95, 'chroma': 444, **options}
         if orientation != 1: kw['exif'] = exif_orientation(orientation)
@@ -194,8 +221,8 @@ def build():
         if add_icc: data = add_icc_box(data, P3_ICC)
         shown = source.transpose(TURN[orientation]) if TURN[orientation] else source
         samples = []
-        for y in range(CELL // 2, shown.height, CELL):
-            for x in range(CELL // 2, shown.width, CELL):
+        for y in range(cell // 2, shown.height, cell):
+            for x in range(cell // 2, shown.width, cell):
                 px = shown.getpixel((x, y))
                 rgb = p3_to_srgb(px[:3]) if declared == 'p3' else px[:3]
                 samples.append([x, y, [*rgb, px[3] if alpha else 255]])
@@ -213,6 +240,10 @@ def build():
                                    'opaque': not alpha, 'reports': reports, 'samples': samples}
         print('%-22s %5d bytes  %3d x %-3d  %s' % (name, len(data), shown.width, shown.height, reports or 'sRGB'))
     assert worst <= 3, ('reference decoder is too far from the patch colours', worst)
+    data = big_tiles()
+    (out_dir / 'heic_big_tiles.heic').write_bytes(data)
+    expected['dishonest'] = {'heic_big_tiles.heic': {'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data), 'declares': [64, 64], 'tiles': [BIG_TILE, BIG_TILE]}}
+    print('%-22s %5d bytes  declares 64 x 64, stored as tiles of %d x %d' % ('heic_big_tiles.heic', len(data), BIG_TILE, BIG_TILE))
     expected['reference'] = 'pillow-heif %s (libheif %s) decodes every fixture within %d of the patch colours' % (pillow_heif.__version__, pillow_heif.libheif_version(), worst)
     (out_dir / 'heic_expected.json').write_text(json.dumps(expected, indent=1) + '\n', encoding='utf-8')
     print(expected['reference'])

@@ -523,8 +523,9 @@ with sync_playwright() as p:
     open_bytes(page, named_project)
     naming = lambda: page.evaluate("[document.querySelector('#filename').value, document.querySelector('#batchFormat').value, document.querySelector('#tbBatchPrefix').value]")
     record('The output name, batch format and file name prefix are saved in the project and restored', naming() == ['案例A_輸出', 'png', 'en_case'] and not is_error(page), naming())
-    open_bytes(page, rebuild(named_project, lambda o: (o['compare'].update(batchFormat='exe', filename='x' * 300 + '\u0007'), o['toolbox'].update(prefix='p' * 90 + '\u0001'))[0]))
-    record('Odd values in those fields are trimmed or replaced by the default', naming() == ['x' * 100, 'webp', 'p' * 40] and not is_error(page), [len(v) for v in naming()])
+    open_bytes(page, rebuild(named_project, lambda o: (o['compare'].update(batchFormat='exe', filename='a\u0007b\u0000' + 'x' * 300), o['toolbox'].update(prefix='p\u0001q\u007f' + 'p' * 90))[0]))
+    record('Odd values in those fields lose their control characters, are cut to length or replaced by the default',
+           naming() == ['ab' + 'x' * 98, 'webp', 'pq' + 'p' * 38] and not is_error(page), [len(v) for v in naming()])
     for label, edit in (('the output name is not text', lambda o: o['compare'].update(filename=7)), ('the file name prefix is not text', lambda o: o['toolbox'].update(prefix=['a']))):
         before_try = naming()
         open_bytes(page, rebuild(named_project, edit))
@@ -544,6 +545,17 @@ with sync_playwright() as p:
     page.keyboard.press('Enter'); page.wait_for_timeout(100)
     record('Removing a batch item from the keyboard moves focus to the item that takes its place',
            page.locator('#cases .case').count() == n_cases - 1 and page.evaluate("document.activeElement.textContent === '移除' && document.activeElement.closest('.case') === document.querySelector('#cases .case')"))
+    # a held Enter key repeats: it must not take the next item with it
+    before_hold = page.locator('#cases .case').count()
+    page.evaluate("for (let n = 0; n < 4; n++) S.cases.push({id: uid(), name: 'hold ' + n, checked: false, doc: clone(S.cases[0].doc)}); renderCases();")
+    held = page.locator('#cases .case').count()
+    page.locator('#cases .case').first.locator('button.danger').focus()
+    for _ in range(5):
+        page.keyboard.down('Enter')
+    page.keyboard.up('Enter'); page.wait_for_timeout(100)
+    record('Holding Enter on a remove button removes one item, not the ones that move up', held == before_hold + 4 and page.locator('#cases .case').count() == held - 1, (before_hold, held, page.locator('#cases .case').count()))
+    page.keyboard.press('Enter'); page.wait_for_timeout(80)
+    record('A fresh press of Enter removes the next one as before', page.locator('#cases .case').count() == held - 2)
     page.locator('#photosTab').click()
     page.evaluate("status('x')")
     page.evaluate('''b64 => { const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0)), dt = new DataTransfer(); dt.items.add(new File([bytes], 'dropped.enproj'));
@@ -557,10 +569,12 @@ with sync_playwright() as p:
     record('Saving with no photos explains instead of producing an empty file', dl() == n_dl and '沒有照片可儲存' in status(page))
     # ------------------------------------------------------------------ total-pixel budget
     huge = io.BytesIO(); Image.new('P', (9000, 6500), 3).save(huge, 'PNG', compress_level=1)
-    set_device = '''([mem, mobile]) => { Object.defineProperty(navigator, 'deviceMemory', {configurable: true, get: () => mem});
-        Object.defineProperty(navigator, 'userAgentData', {configurable: true, get: () => mobile === null ? undefined : ({mobile})}); return pixelBudget(); }'''
-    budgets = [page.evaluate(set_device, v) for v in ([16, False], [8, False], [4, False], [None, False], [8, True], [8, None])]
-    record('The photo budget is larger only on desktop browsers that report 8 GB of memory or more', budgets == [240000000, 240000000, 120000000, 120000000, 120000000, 120000000], budgets)
+    set_device = '''([mem, mobile, mouse = true]) => { Object.defineProperty(navigator, 'deviceMemory', {configurable: true, get: () => mem});
+        Object.defineProperty(navigator, 'userAgentData', {configurable: true, get: () => mobile === null ? undefined : ({mobile})});
+        window.__matchMedia = window.__matchMedia || window.matchMedia; window.matchMedia = q => q === '(pointer:fine)' ? {matches: mouse} : window.__matchMedia.call(window, q); return pixelBudget(); }'''
+    budgets = [page.evaluate(set_device, v) for v in ([16, False], [8, False], [4, False], [None, False], [8, True], [8, None], [16, False, False])]
+    record('The photo budget is larger only on desktop browsers that report 8 GB of memory or more and are driven by a mouse or trackpad',
+           budgets == [240000000, 240000000, 120000000, 120000000, 120000000, 120000000, 120000000], budgets)
 
     def add_huge(names):
         page.evaluate("status('…')")
@@ -573,7 +587,7 @@ with sync_playwright() as p:
     page.evaluate(set_device, [8, False])
     add_huge(['huge3.png'])
     record('The larger budget accepts the photo the smaller one refused', page.evaluate('S.items.length') == 3 and not is_error(page), status(page))
-    page.evaluate("delete navigator.deviceMemory; delete navigator.userAgentData; resetSession(); EnToolbox.refresh(); syncControls(); renderFiles(); renderCases(); commit(); pushHistory();")
+    page.evaluate("delete navigator.deviceMemory; delete navigator.userAgentData; window.matchMedia = window.__matchMedia; resetSession(); EnToolbox.refresh(); syncControls(); renderFiles(); renderCases(); commit(); pushHistory();")
     record('No runtime JS errors during the whole run', not errors, errors)
     (work / 'test-results.json').write_text(json.dumps({'browser': browser.version, 'results': results, 'pageErrors': errors}, ensure_ascii=False, indent=2), encoding='utf-8')
     browser.close()

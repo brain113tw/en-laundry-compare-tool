@@ -1,6 +1,6 @@
 # 第三方元件聲明 / Third-party software in this folder
 
-**中文摘要**：這個資料夾的 `heic-decoder.html` 內含一個第三方元件 libheif-js 1.23.5，用來在 Chrome、Edge、Firefox 這些不能直接顯示 HEIC 的瀏覽器裡解碼 iPhone 的 HEIC 照片。它採用 LGPL-3.0 授權，原樣收錄、沒有修改，授權全文在同資料夾的 `LICENSE-libheif-js.txt`。本專案其餘檔案都不含第三方程式碼。
+**中文摘要**：這個資料夾的 `heic-decoder.html` 內含一個第三方元件 libheif-js 1.23.5，用來在 Chrome、Edge 這類不能直接顯示 HEIC 的瀏覽器裡解碼 iPhone 的 HEIC 照片。它採用 LGPL-3.0 授權，原樣收錄、沒有修改，授權全文在同資料夾的 `LICENSE-libheif-js.txt`。本專案其餘檔案都不含第三方程式碼。
 
 `heic-decoder.html` contains one third-party component. Nothing else in this repository is third-party code.
 
@@ -23,7 +23,7 @@ Take the releases that match the versions in the table above.
 
 ## How it is used
 
-`index.html` loads `heic-decoder.html` only when a HEIC photo is added and the browser cannot show it. The page runs in a frame with `sandbox="allow-scripts"` and its own policy `default-src 'none'`: it receives the bytes of one photo and answers with pixels. It has no network access and cannot reach the tool, its storage or other files. `docs/SECURITY_REVIEW.md` describes this and `tests/check_heic.py` checks it in a real browser.
+`index.html` loads `heic-decoder.html` only when a HEIC photo is added and the browser cannot show it. The page runs in a frame with `sandbox="allow-scripts"` and its own policy `default-src 'none'`: it receives the bytes of one photo and answers with pixels, and a fresh frame is used for every photo. It has no network access and cannot reach the tool, its storage or other files. `docs/SECURITY_REVIEW.md` describes this and `tests/check_heic.py` checks it in a real browser.
 
 The only code of this project inside `heic-decoder.html` is the small glue script, whose source is `tools/heic_decoder_glue.js`.
 

@@ -6,7 +6,9 @@
 // receive the bytes of one HEIC file and answer with pixels.
 //
 // Messages, the whole interface between the tool and this page:
-//   to this page     {type: 'decode', id, buffer, maxPixels}     buffer: the bytes of one file; larger pictures are refused
+//   to this page     {type: 'decode', id, buffer, maxPixels, maxCoded}
+//                    buffer: the bytes of one file; maxPixels: a larger picture is refused before it is decoded;
+//                    maxCoded: the largest coded picture inside the file (a tile, for instance) the library may decode
 //   from this page   {type: 'ready'}                             once, when the decoder has started
 //                    {type: 'result', id, ok: true, width, height, opaque, colour, buffer}     buffer: RGBA pixels, already sRGB
 //                    {type: 'result', id, ok: false, message}
@@ -22,7 +24,7 @@
   addEventListener('message', e => {
     const m = e.data;
     if (e.source !== parent || !m || m.type !== 'decode' || !(m.buffer instanceof ArrayBuffer)) return;
-    worker.postMessage({id: m.id, buffer: m.buffer, maxPixels: m.maxPixels}, [m.buffer]);
+    worker.postMessage({id: m.id, buffer: m.buffer, maxPixels: m.maxPixels, maxCoded: m.maxCoded}, [m.buffer]);
   });
 })();
 
@@ -35,7 +37,7 @@ function workerMain() {
   addEventListener('unhandledrejection', e => { postMessage({type: 'fatal', message: String(e.reason && e.reason.message || e.reason || 'decoder failed')}); });
 
   onmessage = e => {
-    const {id, buffer} = e.data, maxPixels = Number(e.data.maxPixels) || 0;
+    const {id, buffer} = e.data, maxPixels = Number(e.data.maxPixels) || 0, maxCoded = Number(e.data.maxCoded) || maxPixels;
     let decoder = null, images = [];
     const release = () => {
       for (const im of images) { try { im.free(); } catch (_) {} }
@@ -46,6 +48,9 @@ function workerMain() {
       decoder = new lib.HeifDecoder();
       images = decoder.decode(bytes);
       if (!images.length) throw Error('no image in file');
+      // The size checked below is the one the file declares for the finished picture. The tiles it is put together from are a separate matter:
+      // the library's own limit on any single coded picture is lowered from its default (about a gigapixel) to the largest photo the tool accepts.
+      limitCodedPictures(decoder.decoder, maxCoded);
       const image = images.find(im => im.is_primary()) || images[0], width = image.get_width(), height = image.get_height();
       // Refuse before any pixel memory is allocated.
       if (!(width > 0 && height > 0)) throw Error('invalid size');
@@ -65,6 +70,15 @@ function workerMain() {
       });
     } catch (err) { release(); failed(id, err); }
   };
+
+  // libheif keeps its limits in a small structure per context: a version byte, then, as the first 64-bit field, the largest picture in pixels.
+  // (The library's older call for this, heif_context_set_maximum_image_size_limit, has no effect in this build.)
+  function limitCodedPictures(context, pixels) {
+    try {
+      const at = lib._heif_context_get_security_limits(context.$$.ptr), view = new DataView(lib.HEAPU8.buffer);
+      if (at && view.getUint8(at) >= 1 && pixels >= 1) view.setBigUint64(at + 8, BigInt(Math.floor(pixels)), true);
+    } catch (_) {}
+  }
 
   // Which colour space the primary image declares: 'p3', 'srgb', 'other', or '' when nothing is declared (then sRGB is assumed).
   function colourOf(bytes) {
